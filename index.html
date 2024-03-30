@@ -1,32 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Processing</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <h1>Image Processing</h1>
         <p>Upload an image to process</p>
 
         <div class="grid-view">
-            <h2>Image Preview</h2>
-            <div class="image-preview">
+            <div class="grid-item image-input-preview">
+                <h2>Image Preview</h2>
                 <img id="inputImage">
             </div>
-            <div class="grid-item img-input">
+
+            <div class="grid-item image-selector">
                 <input type="file" accept="image/*" id="imageInputForm">
+                <button id="processBtn">Process Image</button>
             </div>
 
-            <button id="processBtn">Process Image</button>
-
-            <h2>Image Output</h2>
-            <div class="grid-item img-output">
+            <div class="grid-item image-output-preview">
+                <h2>Image Output</h2>
                 <img id="outputImage">
             </div>
-    </div>
-    <script src="script.js"></script>
+        </div>
+        <script src="script.js"></script>
 </body>
+
 </html>
