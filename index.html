@@ -7,13 +7,26 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <input type="file" accept="image/*" id="imageInput">
-    <img id="displayImage">
-    <script>
-        document.getElementById('imageInput').addEventListener('change', function(e) {
-            var img = document.getElementById('displayImage');
-            img.src = URL.createObjectURL(e.target.files[0]);
-        }, false);
-    </script>
+    <div class="container">
+        <h1>Image Processing</h1>
+        <p>Upload an image to process</p>
+
+        <div class="grid-view">
+            <h2>Image Preview</h2>
+            <div class="image-preview">
+                <img id="inputImage">
+            </div>
+            <div class="grid-item img-input">
+                <input type="file" accept="image/*" id="imageInputForm">
+            </div>
+
+            <button id="processBtn">Process Image</button>
+
+            <h2>Image Output</h2>
+            <div class="grid-item img-output">
+                <img id="outputImage">
+            </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
