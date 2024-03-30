@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <input type="file" accept="image/*" id="imageInput">
+    <img id="displayImage">
+    <script>
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            var img = document.getElementById('displayImage');
+            img.src = URL.createObjectURL(e.target.files[0]);
+        }, false);
+    </script>
+</body>
+</html>
