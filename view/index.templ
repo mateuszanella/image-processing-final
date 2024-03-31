@@ -1,14 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
+package view
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Processing</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
-</head>
+templ Index() {
+    <header>
+        <h1 class="text-center text-3xl font-bold">
+            Hello, World
+        </h1>
+    </header>
+    <div class="flex justify-center mt-10">
+        <!-- HTMX here -->
+        <button hx-get="/foo" class="btn bg-green-800 p-4 rounded-lg">
+            FOOaaaas
+        </button>
+    </div>
 
-<body>
     <div class="container">
         <h1>Image Processing</h1>
         <p>Upload an image to process</p>
@@ -16,20 +20,18 @@
         <div class="grid-view">
             <div class="grid-item image-input-preview">
                 <h2>Image Preview</h2>
-                <img id="inputImage">
+                <img id="inputImage"/>
             </div>
 
             <div class="grid-item image-selector">
-                <input type="file" accept="image/*" id="imageInputForm">
+                <input type="file" accept="image/*" id="imageInputForm"/>
                 <button id="processBtn">Process Image</button>
             </div>
 
             <div class="grid-item image-output-preview">
                 <h2>Image Output</h2>
-                <img id="outputImage">
+                <img id="outputImage"/>
             </div>
         </div>
-        <script src="script.js"></script>
-</body>
-
-</html>
+    </div>
+}

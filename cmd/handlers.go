@@ -3,21 +3,17 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 )
 
-const webPort = ":8080"
+func (app *Config) HandleStaticFiles() http.Handler {
+	fs := http.FileServer(http.Dir("./static"))
+	return http.StripPrefix("/static/", fs)
+}
 
-type Config struct{}
-
-func main() {
-	//app := Config{}
-
-	log.Printf("Starting api service on port %s\n", webPort)
-
-	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
+func (app *Config) HandleUploadImage() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		file, _, err := r.FormFile("image")
 		if err != nil {
 			http.Error(w, "Failed to read image", http.StatusBadRequest)
@@ -40,14 +36,4 @@ func main() {
 
 		fmt.Fprintln(w, "Image uploaded successfully")
 	})
-
-	server := &http.Server{
-		Addr:    fmt.Sprintf("%s", webPort),
-		Handler: nil,
-	}
-
-	error := server.ListenAndServe()
-	if error != nil {
-		log.Fatal(error)
-	}
 }
