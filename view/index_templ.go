@@ -10,6 +10,17 @@ import "context"
 import "io"
 import "bytes"
 
+import "image-processing/view/partials"
+
+func uploadImage() templ.ComponentScript {
+	return templ.ComponentScript{
+		Name:       `__templ_uploadImage_01ba`,
+		Function:   `function __templ_uploadImage_01ba(){}`,
+		Call:       templ.SafeScript(`__templ_uploadImage_01ba`),
+		CallInline: templ.SafeScriptInline(`__templ_uploadImage_01ba`),
+	}
+}
+
 func Index() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -23,7 +34,71 @@ func Index() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<header><h1 class=\"text-center text-3xl font-bold\">Hello, World</h1></header><div class=\"flex justify-center mt-10\"><!-- HTMX here --><button hx-get=\"/foo\" class=\"btn bg-green-800 p-4 rounded-lg\">FOOaaaas</button></div><div class=\"container\"><h1>Image Processing</h1><p>Upload an image to process</p><div class=\"grid-view\"><div class=\"grid-item image-input-preview\"><h2>Image Preview</h2><img id=\"inputImage\"></div><div class=\"grid-item image-selector\"><input type=\"file\" accept=\"image/*\" id=\"imageInputForm\"> <button id=\"processBtn\">Process Image</button></div><div class=\"grid-item image-output-preview\"><h2>Image Output</h2><img id=\"outputImage\"></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-col min-h-screen\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.Navbar().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<main class=\"flex-1\"><div class=\"container py-10 px-4 sm:px-6\"><div class=\"grid md:grid-cols-[200px_1fr] lg:grid-cols-[250px_1fr] items-start gap-6\"><div class=\"flex flex-col gap-2\"><div class=\"grid gap-2\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.Button("Upload Image", "static/svgs/upload.svg").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.Button("Adjustments", "static/svgs/adjustments.svg").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.Button("Filters", "static/svgs/filters.svg").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><form class=\"flex flex-col gap-4 border rounded-md\" hx-post=\"/api/upload\" enctype=\"multipart/form-data\"><label for=\"file_input\" class=\"text-sm font-medium leading-none border\">Upload Image</label> <input type=\"file\" name=\"image\" id=\"file_input\" accept=\"image/svg+xml,image/png,image/jpeg,image/gif\" class=\"peer sr-only\"><p class=\"mt-1 text-sm text-gray-500 dark:text-gray-300\" id=\"file_input_help\">SVG, PNG, JPG or GIF (MAX. 800x400px).</p><button type=\"submit\" class=\"flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white border rounded-md bg-slate-700 hover:bg-gray-800\">Upload</button></form></div><div class=\"flex flex-col gap-4\"><div class=\"rounded-lg border aspect-video overflow-hidden\" hx-get=\"/image\" hx-trigger=\"load\" hx-swap=\"innerHTML\"><img id=\"image-display\" src=\"/placeholder.svg\" alt=\"Image\" width=\"400\" height=\"225\" class=\"object-cover aspect-video\"></div><div class=\"grid gap-4 md:grid-cols-2\"><div class=\"flex flex-col gap-2\"><label class=\"text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70\">Brightness")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.RangeInput().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</label> <label class=\"text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70\">Contrast")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.RangeInput().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</label></div><div class=\"flex flex-col gap-2\"><label class=\"text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70\">Saturation")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.RangeInput().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</label> <label class=\"text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70\">Blur")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.RangeInput().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</label></div></div></div></div></div></main>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.Footer().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

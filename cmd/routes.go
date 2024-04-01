@@ -16,11 +16,13 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("/static/", app.HandleStaticFiles())
 
 	mux.Handle("POST /api/upload", app.HandleUploadImage())
+	mux.Handle("GET /api/image", app.HandleGetImage())
 
 	// templ routes
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))
 	mux.Handle("/foo", templ.Handler(partials.Foo()))
+	mux.Handle("GET /image", templ.Handler(partials.ImageDisplay()))
 
 	return mux
 }
