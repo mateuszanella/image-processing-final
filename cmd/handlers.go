@@ -32,12 +32,6 @@ func (app *Config) HandleUploadImage() http.Handler {
 		}
 		defer out.Close()
 
-		out, err = os.Create("./static/uploaded.jpg")
-		if err != nil {
-			http.Error(w, "Failed to create uploaded file", http.StatusInternalServerError)
-			return
-		}
-
 		_, err = io.Copy(out, file)
 		if err != nil {
 			http.Error(w, "Failed to save image", http.StatusInternalServerError)

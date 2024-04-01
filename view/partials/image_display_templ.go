@@ -23,7 +23,7 @@ func ImageDisplay() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img id=\"image-display\" src=\"static/uploaded.jpg\" alt=\"Image\" width=\"400\" height=\"225\" class=\"object-cover aspect-video w-full h-full\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img id=\"image-display\" alt=\"Image\" class=\"object-cover aspect-video w-full h-full\"><script>\n\t\tconst fetchImage = async () => {\n\t\t\tconst response = await fetch(\"/api/image\");\n\t\t\tconst blob = await response.blob();\n\t\t\tconst url = URL.createObjectURL(blob);\n\t\t\tdocument.getElementById(\"image-display\").src = url;\n\t\t};\n\n\t\tfetchImage();\n\n\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
