@@ -18,10 +18,17 @@ templ Index() {
 							@partials.Button("Adjustments", "static/svgs/adjustments.svg")
 							@partials.Button("Filters", "static/svgs/filters.svg")
 						</div>
+						<form class="flex flex-col gap-4" hx-post="/api/upload">
+							<label class="text-sm font-medium leading-none">
+								Upload Image
+								<input type="file" class="peer" key="image"/>
+							</label>
+							<button type="submit" class="btn btn-primary">Upload</button>
+						</form>
 					</div>
 					<div class="flex flex-col gap-4">
 						<div class="rounded-lg border aspect-video overflow-hidden">
-							<img src="/placeholder.svg" alt="Image" width="400" height="225" class="object-cover aspect-video"/>
+							<img hx-get="/image" hx-trigger="load" hx-swap="outerHTML" src="/placeholder.svg" alt="Image" width="400" height="225" class="object-cover aspect-video"/>
 						</div>
 						<div class="grid gap-4 md:grid-cols-2">
 							<div class="flex flex-col gap-2">

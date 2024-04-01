@@ -58,7 +58,7 @@ func Index() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"flex flex-col gap-4\"><div class=\"rounded-lg border aspect-video overflow-hidden\"><img src=\"/placeholder.svg\" alt=\"Image\" width=\"400\" height=\"225\" class=\"object-cover aspect-video\"></div><div class=\"grid gap-4 md:grid-cols-2\"><div class=\"flex flex-col gap-2\"><label class=\"text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70\">Brightness")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><form class=\"flex flex-col gap-4\" hx-post=\"/api/upload\"><label class=\"text-sm font-medium leading-none\">Upload Image <input type=\"file\" class=\"peer\" key=\"image\"></label> <button type=\"submit\" class=\"btn btn-primary\">Upload</button></form></div><div class=\"flex flex-col gap-4\"><div class=\"rounded-lg border aspect-video overflow-hidden\"><img hx-get=\"/image\" hx-trigger=\"load\" hx-swap=\"outerHTML\" src=\"/placeholder.svg\" alt=\"Image\" width=\"400\" height=\"225\" class=\"object-cover aspect-video\"></div><div class=\"grid gap-4 md:grid-cols-2\"><div class=\"flex flex-col gap-2\"><label class=\"text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70\">Brightness")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
