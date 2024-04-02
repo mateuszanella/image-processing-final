@@ -60,3 +60,15 @@ func (app *Config) HandleGetImage() http.Handler {
 		http.ServeFile(w, r, "./storage/"+file.Name())
 	})
 }
+
+func (app *Config) HandleTestImageManipulation() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		err := app.TestImageManipulation("")
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to manipulate image: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Test ran sucessfully, check storage folder for output image")
+	})
+}
