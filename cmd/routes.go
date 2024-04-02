@@ -18,6 +18,7 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/image", app.HandleUploadImage())
 	mux.Handle("GET /api/image", app.HandleGetImage())
 	mux.Handle("GET /api/image/{id}", app.HandleGetImageByID())
+	mux.Handle("GET /api/test", app.HandleTestImageManipulation())
 
 	// templ routes
 	c := layout.Base(view.Index())
