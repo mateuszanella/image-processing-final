@@ -18,30 +18,13 @@ templ Index() {
 							@partials.Button("Adjustments", "static/svgs/adjustments.svg")
 							@partials.Button("Filters", "static/svgs/filters.svg")
 						</div>
-						<form class="flex flex-col gap-4 border rounded-md" hx-post="/api/upload" enctype="multipart/form-data">
-							<label for="file_input" class="text-sm font-medium leading-none border">
-								Upload Image
-							</label>
-
-							<input
-								type="file"
-								name="image"
-								id="file_input"
-								accept="image/svg+xml,image/png,image/jpeg,image/gif"
-								class="peer sr-only"
-							/>
-							<p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG or GIF (MAX. 800x400px).</p>
-							<button
-								type="submit"
-								class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white border rounded-md bg-slate-700 hover:bg-gray-800"
-							>
-								Upload
-							</button>
-						</form>
+						<div class="mt-4">
+							@partials.Dropzone()
+						</div>
 					</div>
 					<div class="flex flex-col gap-4">
-						<div class="rounded-lg border aspect-video overflow-hidden" hx-get="/image" hx-trigger="load" hx-swap="innerHTML">
-							<img id="image-display"  src="/placeholder.svg" alt="Image" width="400" height="225" class="object-cover aspect-video"/>
+						<div class="rounded-lg border aspect-video overflow-hidden" hx-get="/image/default" hx-trigger="load" hx-swap="innerHTML">
+							<img id="image-display" src="/placeholder.svg" alt="Image" width="400" height="225" class="object-cover aspect-video"/>
 						</div>
 						<div class="grid gap-4 md:grid-cols-2">
 							<div class="flex flex-col gap-2">

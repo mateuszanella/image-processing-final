@@ -60,3 +60,18 @@ func (app *Config) HandleGetImage() http.Handler {
 		http.ServeFile(w, r, "./storage/"+file.Name())
 	})
 }
+
+func (app *Config) HandleGetImageByID() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+
+		file, err := os.Open("./storage/" + id + ".jpg")
+		if err != nil {
+			http.Error(w, "Image not found", http.StatusNotFound)
+			return
+		}
+		defer file.Close()
+
+		http.ServeFile(w, r, "./storage/"+id+".jpg")
+	})
+}

@@ -4,7 +4,7 @@ tmp_dir = "bin"
 
 [build]
   bin = "./bin/main"
-  cmd = "npm run build && templ generate && go build -o ./bin/main ./cmd/"
+  cmd = "templ generate && go build -o ./bin/main ./cmd/"
   delay = 1000
   exclude_dir = ["static", "node_modules"]
   exclude_regex = [".*_templ.go"]
