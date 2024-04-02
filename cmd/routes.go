@@ -20,6 +20,7 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("GET /api/image/{id}", app.HandleGetImageByID())
 	mux.Handle("GET /api/test", app.HandleTestImageManipulation())
 	mux.Handle("POST /api/grayscale", app.HandleCreateGrayscale())
+	mux.Handle("POST /api/binary", app.HandleCreateBinary())
 
 	// templ routes
 	c := layout.Base(view.Index())

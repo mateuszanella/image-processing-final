@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/google/uuid"
 )
@@ -92,6 +93,26 @@ func (app *Config) HandleCreateGrayscale() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filename := r.FormValue("image")
 		err := app.CreateGrayscale(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to create grayscale: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created sucessfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleCreateBinary() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		thresholdStr := r.FormValue("threshold")
+		threshold, err := strconv.Atoi(thresholdStr)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse threshold: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		err = app.CreateBinary(filename, uint8(threshold))
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create grayscale: %v", err), http.StatusInternalServerError)
 			return

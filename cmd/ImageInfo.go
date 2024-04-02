@@ -55,9 +55,9 @@ func (imgInfo *ImageInfo) NewBinary(threshold uint8) *image.RGBA {
 
 	for y := 0; y < imgInfo.Height; y++ {
 		for x := 0; x < imgInfo.Width; x++ {
-			grayValue := 0.299*float64(imgInfo.Pixels[y][x].R) +
-				0.587*float64(imgInfo.Pixels[y][x].G) +
-				0.114*float64(imgInfo.Pixels[y][x].B)
+			grayValue := 0.299*float64(imgInfo.Pixels[y][x].R)/255.0 +
+				0.587*float64(imgInfo.Pixels[y][x].G)/255.0 +
+				0.114*float64(imgInfo.Pixels[y][x].B)/255.0
 
 			if grayValue > float64(threshold) {
 				img.Set(x, y, color.RGBA{255, 255, 255, 255})
