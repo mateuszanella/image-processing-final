@@ -2,3 +2,6 @@ node_modules
 bin
 storage/*
 static/css/tailwind.css
+view/*_templ.go
+view/layout/*_templ.go
+view/partials/*_templ.go
