@@ -1,7 +1,6 @@
 package partials
 
-
-templ ImageDisplay() {
+templ ImageDisplay(imageID string) {
 	<img
 		id="image-display"
 		alt="Image"
@@ -14,8 +13,6 @@ templ ImageDisplay() {
 			const url = URL.createObjectURL(blob);
 			document.getElementById("image-display").src = url;
 		};
-
 		fetchImage();
-
 	</script>
 }

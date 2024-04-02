@@ -61,6 +61,21 @@ func (app *Config) HandleGetImage() http.Handler {
 	})
 }
 
+func (app *Config) HandleGetImageByID() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+
+		file, err := os.Open("./storage/" + id + ".jpg")
+		if err != nil {
+			http.Error(w, "Image not found", http.StatusNotFound)
+			return
+		}
+		defer file.Close()
+
+		http.ServeFile(w, r, "./storage/"+id+".jpg")
+	})
+}
+
 func (app *Config) HandleTestImageManipulation() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		err := app.TestImageManipulation("")

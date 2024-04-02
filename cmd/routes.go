@@ -15,15 +15,26 @@ func (app *Config) routes() http.Handler {
 
 	mux.Handle("/static/", app.HandleStaticFiles())
 
-	mux.Handle("POST /api/upload", app.HandleUploadImage())
+	mux.Handle("POST /api/image", app.HandleUploadImage())
 	mux.Handle("GET /api/image", app.HandleGetImage())
+	mux.Handle("GET /api/image/{id}", app.HandleGetImageByID())
 	mux.Handle("GET /api/test", app.HandleTestImageManipulation())
 
 	// templ routes
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))
 	mux.Handle("/foo", templ.Handler(partials.Foo()))
-	mux.Handle("GET /image", templ.Handler(partials.ImageDisplay()))
+	mux.Handle("GET /image/{id}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		if id == "" {
+			http.Error(w, "No image ID provided", http.StatusBadRequest)
+			return
+		}
+
+		c := partials.ImageDisplay(id)
+
+		templ.Handler(c).ServeHTTP(w, r)
+	}))
 
 	return mux
 }

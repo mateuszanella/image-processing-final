@@ -1,4 +1,4 @@
 node_modules
 bin
-storage
+storage/*
 static/css/tailwind.css
