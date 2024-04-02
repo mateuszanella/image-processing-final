@@ -87,3 +87,16 @@ func (app *Config) HandleTestImageManipulation() http.Handler {
 		fmt.Fprintln(w, "Test ran sucessfully, check storage folder for output image")
 	})
 }
+
+func (app *Config) HandleCreateGrayscale() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreateGrayscale(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to create grayscale: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created sucessfully, check storage folder for output image")
+	})
+}

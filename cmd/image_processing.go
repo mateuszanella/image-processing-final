@@ -8,7 +8,63 @@ import (
 	"os"
 )
 
+func (app *Config) openImage(filename string) (image.Image, error) {
+	file, err := os.Open("./storage/" + filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	img, _, err := image.Decode(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return img, nil
+}
+
+func (app *Config) saveImage(img image.Image, filename string) error {
+	out, err := os.Create("./storage/" + filename)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	var opt jpeg.Options
+	opt.Quality = 100
+	err = jpeg.Encode(out, img, &opt)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateGrayscale(filename string) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	grayImg := imgInfo.NewGrayscale()
+
+	err = app.saveImage(grayImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Basic process
 func (app *Config) TestImageManipulation(filename string) error {
+	// Ill keep this function like this as an example of all the steps needed to do the stuff
 	if filename == "" {
 		filename = "uploaded.jpg"
 	}
