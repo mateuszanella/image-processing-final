@@ -108,10 +108,14 @@ func (app *Config) HandleCreateBinary() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filename := r.FormValue("image")
 		thresholdStr := r.FormValue("threshold")
-		threshold, err := strconv.Atoi(thresholdStr)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse threshold: %v", err), http.StatusInternalServerError)
-			return
+		threshold := 128
+		var err error
+		if thresholdStr != "" {
+			threshold, err = strconv.Atoi(thresholdStr)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse threshold: %v", err), http.StatusInternalServerError)
+				return
+			}
 		}
 
 		err = app.CreateBinary(filename, uint8(threshold))
@@ -142,5 +146,11 @@ func (app *Config) HandleDisplayComponent() http.Handler {
 func (app *Config) HandleDropzoneComponent() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		templ.Handler(partials.Dropzone()).ServeHTTP(w, r)
+	})
+}
+
+func (app *Config) HandleFiltersComponent() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(partials.Filters()).ServeHTTP(w, r)
 	})
 }
