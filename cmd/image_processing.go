@@ -9,7 +9,7 @@ import (
 )
 
 func (app *Config) openImage(filename string) (image.Image, error) {
-	file, err := os.Open("./storage/" + filename)
+	file, err := os.Open("./storage/" + filename + ".jpg")
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +55,28 @@ func (app *Config) CreateGrayscale(filename string) error {
 	grayImg := imgInfo.NewGrayscale()
 
 	err = app.saveImage(grayImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateBinary(filename string, threshold uint8) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	binaryImg := imgInfo.NewBinary(threshold)
+
+	err = app.saveImage(binaryImg, "output.jpg")
 	if err != nil {
 		return err
 	}

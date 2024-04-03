@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"image-processing/view/partials"
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 
+	"github.com/a-h/templ"
 	"github.com/google/uuid"
 )
 
@@ -98,5 +101,56 @@ func (app *Config) HandleCreateGrayscale() http.Handler {
 		}
 
 		fmt.Fprintln(w, "Image created sucessfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleCreateBinary() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		thresholdStr := r.FormValue("threshold")
+		threshold := 128
+		var err error
+		if thresholdStr != "" {
+			threshold, err = strconv.Atoi(thresholdStr)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse threshold: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.CreateBinary(filename, uint8(threshold))
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to create grayscale: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created sucessfully, check storage folder for output image")
+	})
+}
+
+// Components
+func (app *Config) HandleDisplayComponent() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		if id == "" {
+			http.Error(w, "No image ID provided", http.StatusBadRequest)
+			return
+		}
+
+		c := partials.ImageDisplay(id)
+
+		templ.Handler(c).ServeHTTP(w, r)
+	})
+}
+
+func (app *Config) HandleDropzoneComponent() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(partials.Dropzone()).ServeHTTP(w, r)
+	})
+}
+
+func (app *Config) HandleFiltersComponent() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(partials.Filters()).ServeHTTP(w, r)
 	})
 }

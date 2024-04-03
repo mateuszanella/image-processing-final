@@ -20,22 +20,15 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("GET /api/image/{id}", app.HandleGetImageByID())
 	mux.Handle("GET /api/test", app.HandleTestImageManipulation())
 	mux.Handle("POST /api/grayscale", app.HandleCreateGrayscale())
+	mux.Handle("POST /api/binary", app.HandleCreateBinary())
 
 	// templ routes
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))
 	mux.Handle("/foo", templ.Handler(partials.Foo()))
-	mux.Handle("GET /image/{id}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := r.PathValue("id")
-		if id == "" {
-			http.Error(w, "No image ID provided", http.StatusBadRequest)
-			return
-		}
-
-		c := partials.ImageDisplay(id)
-
-		templ.Handler(c).ServeHTTP(w, r)
-	}))
+	mux.Handle("GET /image/{id}", app.HandleDisplayComponent())
+	mux.Handle("GET /component/dropzone", app.HandleDropzoneComponent())
+	mux.Handle("GET /component/filters", app.HandleFiltersComponent())
 
 	return mux
 }
