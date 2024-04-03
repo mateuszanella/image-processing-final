@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"image-processing/view/partials"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
 
+	"github.com/a-h/templ"
 	"github.com/google/uuid"
 )
 
@@ -119,5 +121,26 @@ func (app *Config) HandleCreateBinary() http.Handler {
 		}
 
 		fmt.Fprintln(w, "Image created sucessfully, check storage folder for output image")
+	})
+}
+
+// Components
+func (app *Config) HandleDisplayComponent() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		if id == "" {
+			http.Error(w, "No image ID provided", http.StatusBadRequest)
+			return
+		}
+
+		c := partials.ImageDisplay(id)
+
+		templ.Handler(c).ServeHTTP(w, r)
+	})
+}
+
+func (app *Config) HandleDropzoneComponent() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(partials.Dropzone()).ServeHTTP(w, r)
 	})
 }

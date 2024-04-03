@@ -14,11 +14,11 @@ templ Index() {
 				<div class="grid md:grid-cols-[200px_1fr] lg:grid-cols-[250px_1fr] items-start gap-6">
 					<div class="flex flex-col gap-2">
 						<div class="grid gap-2">
-							@partials.Button("Upload Image", "static/svgs/upload.svg")
+							@partials.ToolbarButton("Upload Image", "static/svgs/upload.svg", "/component/dropzone")
 							@partials.Button("Adjustments", "static/svgs/adjustments.svg")
-							@partials.Button("Filters", "static/svgs/filters.svg")
+							@partials.ToolbarButton("Filters", "static/svgs/filters.svg", "/api/filters")
 						</div>
-						<div class="mt-4">
+						<div id="imageProcessingControls" class="mt-4">
 							@partials.Dropzone()
 						</div>
 					</div>
