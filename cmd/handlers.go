@@ -41,26 +41,45 @@ func (app *Config) HandleUploadImage() http.Handler {
 			return
 		}
 
-		fmt.Fprintln(w, "Image uploaded successfully")
+		file.Seek(0, 0)
+
+		out2, err := os.Create("./storage/" + "output.jpg")
+		if err != nil {
+			http.Error(w, "Failed to open file", http.StatusInternalServerError)
+			return
+		}
+		defer out2.Close()
+
+		_, err = io.Copy(out2, file)
+		if err != nil {
+			http.Error(w, "Failed to save image", http.StatusInternalServerError)
+			return
+		}
+
+		templ.Handler(partials.ImageDisplay()).ServeHTTP(w, r)
 	})
 }
 
 func (app *Config) HandleGetImage() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		files, err := os.ReadDir("./storage")
+		filePath := "./storage/output.jpg"
+
+		_, err := os.Stat(filePath)
+		if os.IsNotExist(err) {
+			filePath = "./static/uploaded.jpg"
+			_, err = os.Stat(filePath)
+			if os.IsNotExist(err) {
+				http.Error(w, "Image not found", http.StatusNotFound)
+				return
+			}
+		}
+
 		if err != nil {
-			http.Error(w, "Failed to read storage", http.StatusInternalServerError)
+			http.Error(w, "Failed to open image", http.StatusInternalServerError)
 			return
 		}
 
-		if len(files) == 0 {
-			http.Error(w, "No images found", http.StatusNotFound)
-			return
-		}
-
-		file := files[len(files)-1]
-
-		http.ServeFile(w, r, "./storage/"+file.Name())
+		http.ServeFile(w, r, filePath)
 	})
 }
 
@@ -93,7 +112,7 @@ func (app *Config) HandleTestImageManipulation() http.Handler {
 
 func (app *Config) HandleCreateGrayscale() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("output")
 		err := app.CreateGrayscale(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create grayscale: %v", err), http.StatusInternalServerError)
@@ -131,13 +150,7 @@ func (app *Config) HandleCreateBinary() http.Handler {
 // Components
 func (app *Config) HandleDisplayComponent() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := r.PathValue("id")
-		if id == "" {
-			http.Error(w, "No image ID provided", http.StatusBadRequest)
-			return
-		}
-
-		c := partials.ImageDisplay(id)
+		c := partials.ImageDisplay()
 
 		templ.Handler(c).ServeHTTP(w, r)
 	})

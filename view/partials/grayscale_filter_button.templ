@@ -1,7 +1,18 @@
 package partials
 
 templ GrayscaleFilterButton() {
-	<button class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 hover:bg-gray-200" hx-post="/api/grayscale">
-		Grayscale
-	</button>
+    <button class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 hover:bg-gray-200" hx-post="/api/grayscale" hx-swap="outerHTML">
+        Grayscale
+    </button>
+    <script>
+        document.querySelector('button').addEventListener('htmx:afterSwap', function() {
+            const fetchImage = async () => {
+                const response = await fetch("/api/image");
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                document.getElementById("image-display").src = url;
+            };
+        });
+		fetchImage();
+    </script>
 }

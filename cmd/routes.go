@@ -25,8 +25,9 @@ func (app *Config) routes() http.Handler {
 	// templ routes
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))
+	mux.Handle("/blank", templ.Handler(partials.Blank()))
 	mux.Handle("/foo", templ.Handler(partials.Foo()))
-	mux.Handle("GET /image/{id}", app.HandleDisplayComponent())
+	mux.Handle("GET /image", app.HandleDisplayComponent())
 	mux.Handle("GET /component/dropzone", app.HandleDropzoneComponent())
 	mux.Handle("GET /component/filters", app.HandleFiltersComponent())
 
