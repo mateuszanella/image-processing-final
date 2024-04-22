@@ -22,11 +22,6 @@ templ Dropzone() {
 		</button>
 	</form>
 	<script>
-    // const erase = (id) => {
-    //     setTimeout(() => {
-    //         document.getElementById(id).innerHTML= ""
-    //     }, 1000)
-    // }
         document.getElementById('dropzone-file').addEventListener('change', function() {
             const label = document.querySelector('label[for="dropzone-file"]');
             const file = this.files[0];
@@ -58,6 +53,29 @@ templ Dropzone() {
                 label.classList.add('border-dashed');
             }
         });
+
+        document.getElementById('dropzone-submit').addEventListener('click', async function() {
+            await refreshImage();
+            await resetDropzone();
+        });
+
+        async function resetDropzone() {
+            const label = document.querySelector('label[for="dropzone-file"]');
+            label.classList.remove('border-solid', 'border-blue-500');
+            label.classList.add('border-dashed');
+
+            label.querySelector('p').classList.remove('hidden');
+
+            label.querySelector('svg').classList.remove('text-blue-500');
+            label.querySelector('svg').classList.add('text-gray-500', 'dark:text-gray-400');
+
+            label.querySelector('p:last-child').classList.remove('hidden');
+
+            label.querySelector('div').classList.remove('p-2');
+            label.querySelector('div').classList.add('pt-5', 'pb-6');
+
+            label.style.backgroundImage = '';
+        }
 
     </script>
 }
