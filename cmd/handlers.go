@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"image-processing/view/partials"
 	"io"
@@ -126,11 +127,20 @@ func (app *Config) HandleCreateGrayscale() http.Handler {
 func (app *Config) HandleCreateBinary() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filename := r.FormValue("image")
-		thresholdStr := r.FormValue("threshold")
+
+		// Parse the JSON body of the request
+		var data struct {
+			Threshold string `json:"threshold"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
 		threshold := 128
-		var err error
-		if thresholdStr != "" {
-			threshold, err = strconv.Atoi(thresholdStr)
+		if data.Threshold != "" {
+			threshold, err = strconv.Atoi(data.Threshold)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse threshold: %v", err), http.StatusInternalServerError)
 				return
@@ -143,7 +153,7 @@ func (app *Config) HandleCreateBinary() http.Handler {
 			return
 		}
 
-		fmt.Fprintln(w, "Image created sucessfully, check storage folder for output image")
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
 	})
 }
 
