@@ -23,6 +23,11 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/grayscale", app.HandleCreateGrayscale())
 	mux.Handle("POST /api/binary", app.HandleCreateBinary())
 
+	mux.Handle("POST /api/add", app.HandleAddValue())
+	mux.Handle("POST /api/subtract", app.HandleSubtractValue())
+	mux.Handle("POST /api/multiply", app.HandleMultiplyValue())
+	mux.Handle("POST /api/divide", app.HandleDivideValue())
+
 	// templ routes
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))

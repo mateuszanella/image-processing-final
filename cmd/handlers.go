@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// Image updates
 func (app *Config) HandleStaticFiles() http.Handler {
 	fs := http.FileServer(http.Dir("./static"))
 	return http.StripPrefix("/static/", fs)
@@ -111,6 +112,7 @@ func (app *Config) HandleTestImageManipulation() http.Handler {
 	})
 }
 
+// Image filters
 func (app *Config) HandleCreateGrayscale() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filename := r.FormValue("output")
@@ -128,7 +130,6 @@ func (app *Config) HandleCreateBinary() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filename := r.FormValue("image")
 
-		// Parse the JSON body of the request
 		var data struct {
 			Threshold string `json:"threshold"`
 		}
@@ -149,7 +150,140 @@ func (app *Config) HandleCreateBinary() http.Handler {
 
 		err = app.CreateBinary(filename, uint8(threshold))
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to create grayscale: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to create binary: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleAddValue() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			Value string `json:"value"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		value := 10
+		if data.Value != "" {
+			value, err = strconv.Atoi(data.Value)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse value: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		if value < 0 || value > 255 {
+			http.Error(w, "Value must be between 0 and 255", http.StatusBadRequest)
+			return
+		}
+
+		err = app.AddPixels(filename, uint8(value))
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to add values: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleSubtractValue() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			Value string `json:"value"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		value := 128
+		if data.Value != "" {
+			value, err = strconv.Atoi(data.Value)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse value: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.SubtractPixels(filename, uint8(value))
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to subtract values: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleMultiplyValue() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			Value string `json:"value"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		value := 128
+		if data.Value != "" {
+			value, err = strconv.Atoi(data.Value)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse value: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.MultiplyPixels(filename, uint8(value))
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to multiply values: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleDivideValue() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			Value string `json:"value"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		value := 128
+		if data.Value != "" {
+			value, err = strconv.Atoi(data.Value)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse value: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.DividePixels(filename, uint8(value))
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to divide values: %v", err), http.StatusInternalServerError)
 			return
 		}
 
