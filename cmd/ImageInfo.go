@@ -85,3 +85,80 @@ func (imgInfo *ImageInfo) NewGrayscale() *image.Gray {
 
 	return img
 }
+
+func (imgInfo *ImageInfo) AddValue(value uint8) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := min((imgInfo.Pixels[y][x].R>>8)+uint32(value), 255)
+			g := min((imgInfo.Pixels[y][x].G>>8)+uint32(value), 255)
+			b := min((imgInfo.Pixels[y][x].B>>8)+uint32(value), 255)
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) SubtractValue(value uint8) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := subtractWithLimit(imgInfo.Pixels[y][x].R>>8, value)
+			g := subtractWithLimit(imgInfo.Pixels[y][x].G>>8, value)
+			b := subtractWithLimit(imgInfo.Pixels[y][x].B>>8, value)
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) MultiplyValue(value uint8) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := min((imgInfo.Pixels[y][x].R>>8)*uint32(value), 255)
+			g := min((imgInfo.Pixels[y][x].G>>8)*uint32(value), 255)
+			b := min((imgInfo.Pixels[y][x].B>>8)*uint32(value), 255)
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) DivideValue(value uint8) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			if value == 0 {
+				img.Set(x, y, color.RGBA{0, 0, 0, 255})
+				continue
+			}
+
+			r := imgInfo.Pixels[y][x].R >> 8
+			g := imgInfo.Pixels[y][x].G >> 8
+			b := imgInfo.Pixels[y][x].B >> 8
+
+			r = min(r/uint32(value), 255)
+			g = min(g/uint32(value), 255)
+			b = min(b/uint32(value), 255)
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
+// Helper functions
+func subtractWithLimit(value uint32, limit uint8) uint32 {
+	if value < uint32(limit) {
+		return 0
+	}
+	return value - uint32(limit)
+}

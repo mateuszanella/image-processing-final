@@ -84,6 +84,94 @@ func (app *Config) CreateBinary(filename string, threshold uint8) error {
 	return nil
 }
 
+func (app *Config) AddPixels(filename string, value uint8) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.AddValue(value)
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) SubtractPixels(filename string, value uint8) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.SubtractValue(value)
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) MultiplyPixels(filename string, value uint8) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.MultiplyValue(value)
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) DividePixels(filename string, value uint8) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.DivideValue(value)
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Basic process
 func (app *Config) TestImageManipulation(filename string) error {
 	// Ill keep this function like this as an example of all the steps needed to do the stuff

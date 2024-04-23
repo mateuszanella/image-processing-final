@@ -1,0 +1,23 @@
+package partials
+
+templ BinaryFilterButton() {
+    <div class="grid grid-cols-2 gap-2">
+        <input id="threshold" type="number" min="0" max="255" value="128" class="w-full mr-2 border border-input bg-background h-9 rounded-md px-3"></input>
+        <button class="w-full inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 hover:bg-gray-200" onclick="applyBinaryAndRefresh()">
+            Binary
+        </button>
+    </div>
+    <script>
+        async function applyBinaryAndRefresh() {
+            var threshold = document.getElementById("threshold").value;
+            await fetch('/api/binary', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ threshold: threshold }) 
+            });
+            await refreshImage();
+        }
+    </script>
+}
