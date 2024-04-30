@@ -6,9 +6,11 @@ templ Base(children ...templ.Component) {
         <head>
             <meta charset="UTF-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <title>Hello, TEMPL</title>
+            <title>Image Processing</title>
             <!-- tailwind css -->
             <link href="/static/css/tailwind.css" rel="stylesheet"/>
+            <!-- scritps -->
+            <script src="/static/scripts/index.js" defer></script>
         </head>
         <body>
             for _, child := range children {
