@@ -14,6 +14,29 @@ async function refreshImage() {
             .catch(reject);
     });
 }
+
+async function uploadImage(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await fetch('/api/image', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            resolve();
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
 // *-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-*
 
 async function resetDropzone() {
