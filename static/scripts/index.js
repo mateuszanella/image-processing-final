@@ -81,6 +81,11 @@ async function applyBinaryAndRefresh() {
     refreshImage();
 }
 
+async function applyNegativeAndRefresh() {
+    await fetch('/api/negative', { method: 'POST' });
+    refreshImage();
+}
+
 // Basic operations
 async function applyAddAndRefresh() {
     var value = document.getElementById("add-value").value;

@@ -30,6 +30,8 @@ func (app *Config) routes() http.Handler {
 
 	mux.Handle("POST /api/not", app.HandleNotOpertion())
 
+	mux.Handle("POST /api/negative", app.HandleCreateNegativeFilter())
+
 	// templ routes
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))

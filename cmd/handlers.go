@@ -112,6 +112,8 @@ func (app *Config) HandleTestImageManipulation() http.Handler {
 }
 
 // Image filters
+
+// Basic
 func (app *Config) HandleCreateGrayscale() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filename := r.FormValue("output")
@@ -157,6 +159,7 @@ func (app *Config) HandleCreateBinary() http.Handler {
 	})
 }
 
+// Basic Operations
 func (app *Config) HandleAddValue() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filename := r.FormValue("image")
@@ -290,12 +293,27 @@ func (app *Config) HandleDivideValue() http.Handler {
 	})
 }
 
+// Logical Operations
 func (app *Config) HandleNotOpertion() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filename := r.FormValue("image")
 		err := app.NotOpertion(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to apply not operation: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+// Basic Filters
+func (app *Config) HandleCreateNegativeFilter() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreateNegative(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to create negative filter: %v", err), http.StatusInternalServerError)
 			return
 		}
 
