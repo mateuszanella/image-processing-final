@@ -40,6 +40,7 @@ func (app *Config) saveImage(img image.Image, filename string) error {
 	return nil
 }
 
+// Basic filters
 func (app *Config) CreateGrayscale(filename string) error {
 	if filename == "" {
 		filename = "uploaded"
@@ -84,6 +85,7 @@ func (app *Config) CreateBinary(filename string, threshold uint8) error {
 	return nil
 }
 
+// Basic Operations
 func (app *Config) AddPixels(filename string, value uint8) error {
 	if filename == "" {
 		filename = "uploaded"
@@ -172,7 +174,35 @@ func (app *Config) DividePixels(filename string, value uint8) error {
 	return nil
 }
 
-// Basic process
+// Logical Operations
+func (app *Config) NotOpertion(filename string) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	binaryImg := imgInfo.NewBinary(128)
+	binaryImgInfo := NewImageInfo(binaryImg)
+
+	processedImg := imgInfo.NewNot(binaryImgInfo)
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Filters
+
+// Dummy
 func (app *Config) TestImageManipulation(filename string) error {
 	// Ill keep this function like this as an example of all the steps needed to do the stuff
 	if filename == "" {

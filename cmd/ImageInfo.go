@@ -50,6 +50,7 @@ func (imgInfo *ImageInfo) GenerateImage() *image.RGBA {
 	return img
 }
 
+// Basic
 func (imgInfo *ImageInfo) NewBinary(threshold uint8) *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
 
@@ -86,6 +87,7 @@ func (imgInfo *ImageInfo) NewGrayscale() *image.Gray {
 	return img
 }
 
+// Basic Operations
 func (imgInfo *ImageInfo) AddValue(value uint8) *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
 
@@ -148,6 +150,38 @@ func (imgInfo *ImageInfo) DivideValue(value uint8) *image.RGBA {
 			r = min(r/uint32(value), 255)
 			g = min(g/uint32(value), 255)
 			b = min(b/uint32(value), 255)
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
+// Filer Operations
+func (imgInfo *ImageInfo) NewNegative(img2 *ImageInfo) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := 255 - (img2.Pixels[y][x].R >> 8)
+			g := 255 - (img2.Pixels[y][x].G >> 8)
+			b := 255 - (img2.Pixels[y][x].B >> 8)
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
+// Logical Operations
+func (imgInfo *ImageInfo) NewNot(img2 *ImageInfo) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := 255 - (img2.Pixels[y][x].R >> 8)
+			g := 255 - (img2.Pixels[y][x].G >> 8)
+			b := 255 - (img2.Pixels[y][x].B >> 8)
 			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
 		}
 	}

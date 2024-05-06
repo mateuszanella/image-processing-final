@@ -28,6 +28,8 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/multiply", app.HandleMultiplyValue())
 	mux.Handle("POST /api/divide", app.HandleDivideValue())
 
+	mux.Handle("POST /api/not", app.HandleNotOpertion())
+
 	// templ routes
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))

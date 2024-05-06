@@ -63,8 +63,8 @@ async function resetDropzone() {
 
 // // *-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-*
 
+// Filters
 async function applyGrayscaleAndRefresh() {
-    console.log("Applying grayscale filter");
     await fetch('/api/grayscale', { method: 'POST' });
     refreshImage();
 }
@@ -81,6 +81,7 @@ async function applyBinaryAndRefresh() {
     refreshImage();
 }
 
+// Basic operations
 async function applyAddAndRefresh() {
     var value = document.getElementById("add-value").value;
     await fetch('/api/add', { 
@@ -128,5 +129,11 @@ async function applyDivAndRefresh() {
         },
         body: JSON.stringify({ value: value }) 
     });
+    refreshImage();
+}
+
+// Logic operations
+async function applyNOTAndRefresh() {
+    await fetch('/api/not', { method: 'POST' });
     refreshImage();
 }
