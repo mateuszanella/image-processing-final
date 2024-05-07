@@ -35,6 +35,7 @@ func (app *Config) routes() http.Handler {
 
 	mux.Handle("POST /api/mean-sdf", app.HandleMeanFilter())
 	mux.Handle("POST /api/median-sdf", app.HandleMedianFilter())
+	mux.Handle("POST /api/gaussian-sdf", app.HandleGaussianFilter())
 
 	// templ routes
 	c := layout.Base(view.Index())

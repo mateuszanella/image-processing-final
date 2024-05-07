@@ -173,3 +173,15 @@ async function applyMedianFilterAndRefresh() {
     });
     refreshImage();
 }
+
+async function applyGaussianFilterAndRefresh() {
+    var size = document.getElementById("gaussian-filter-size").value;
+    await fetch('/api/gaussian-sdf', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ size: size }) 
+    });
+    refreshImage();
+}

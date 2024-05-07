@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"image/color"
+	"math"
 	"sort"
 )
 
@@ -272,6 +273,39 @@ func (imgInfo *ImageInfo) NewMedianFilter(size int) *image.RGBA {
 	return img
 }
 
+func (imgInfo *ImageInfo) NewGaussianFilter(size int) *image.RGBA {
+	if size%2 == 0 {
+		size++
+	}
+
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	kernel := GaussianKernel(size, 1.0)
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := float64(0)
+			g := float64(0)
+			b := float64(0)
+
+			for i := range kernel {
+				for j := range kernel[i] {
+					if y+i-size/2 < 0 || y+i-size/2 >= imgInfo.Height || x+j-size/2 < 0 || x+j-size/2 >= imgInfo.Width {
+						continue
+					}
+
+					r += float64(imgInfo.Pixels[y+i-size/2][x+j-size/2].R>>8) * kernel[i][j]
+					g += float64(imgInfo.Pixels[y+i-size/2][x+j-size/2].G>>8) * kernel[i][j]
+					b += float64(imgInfo.Pixels[y+i-size/2][x+j-size/2].B>>8) * kernel[i][j]
+				}
+			}
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
 // Logical Operations
 func (imgInfo *ImageInfo) NewNot(img2 *ImageInfo) *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
@@ -294,4 +328,29 @@ func subtractWithLimit(value uint32, limit uint8) uint32 {
 		return 0
 	}
 	return value - uint32(limit)
+}
+
+func GaussianKernel(size int, sigma float64) [][]float64 {
+	kernel := make([][]float64, size)
+	for i := range kernel {
+		kernel[i] = make([]float64, size)
+	}
+
+	var sum float64
+	radius := size / 2
+	for x := -radius; x <= radius; x++ {
+		for y := -radius; y <= radius; y++ {
+			exp := -(float64(x*x+y*y) / (2 * sigma * sigma))
+			kernel[x+radius][y+radius] = (1 / (2 * math.Pi * sigma * sigma)) * math.Exp(exp)
+			sum += kernel[x+radius][y+radius]
+		}
+	}
+
+	for i := range kernel {
+		for j := range kernel[i] {
+			kernel[i][j] /= sum
+		}
+	}
+
+	return kernel
 }

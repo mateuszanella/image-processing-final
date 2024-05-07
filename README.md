@@ -21,7 +21,7 @@ npm run watch
 7. ~~Perform Negative Transformation on an image.~~
 8. Perform the following Spatial Domain Filtering:
     1. ~~Average~~
-    2. Median
+    2. ~~Median~~
     3. Gaussian
     4. Order
 9. Perform Morphological Operations (Dilation, Erosion, Opening, Closing, Contour).
