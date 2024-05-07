@@ -202,3 +202,56 @@ async function applyDilationAndRefresh() {
     });
     refreshImage();
 }
+
+async function applyErosionAndRefresh() {
+    var size = document.getElementById("erosion-matrix-size").value;
+    var kernelType = document.getElementById("erosion-kernel-type").value;
+    await fetch('/api/erosion', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            size: size,
+            kernelType: kernelType
+        }) 
+    });
+    refreshImage();
+}
+
+async function applyOpeningAndRefresh() {
+    var size = document.getElementById("opening-matrix-size").value;
+    var kernelType = document.getElementById("opening-kernel-type").value;
+    await fetch('/api/opening', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            size: size,
+            kernelType: kernelType
+        }) 
+    });
+    refreshImage();
+}
+
+async function applyClosingAndRefresh() {
+    var size = document.getElementById("closing-matrix-size").value;
+    var kernelType = document.getElementById("closing-kernel-type").value;
+    await fetch('/api/closing', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            size: size,
+            kernelType: kernelType
+        }) 
+    });
+    refreshImage();
+}
+
+async function applyContourAndRefresh() {
+    await fetch('/api/contour', { method: 'POST' });
+    refreshImage();
+}

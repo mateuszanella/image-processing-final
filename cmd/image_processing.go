@@ -336,6 +336,114 @@ func (app *Config) CreateDilation(filename string, size int, kernelType KernelTy
 	return nil
 }
 
+func (app *Config) CreateErosion(filename string, size int, kernelType KernelType) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+	binaryImg := imgInfo.NewBinary(128)
+
+	binaryImgInfo := NewImageInfo(binaryImg)
+	processedImg := binaryImgInfo.NewErosion(size, kernelType)
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Dilation: This operation expands or thickens objects in an image.
+// Erosion: This operation shrinks or thins objects in an image.
+// Opening: This operation is an erosion followed by a dilation. It is used to remove noise.
+// Closing: This operation is a dilation followed by an erosion. It is used to close small holes in the objects.
+// Contour: This operation is used to draw the boundary of objects in an image.
+
+func (app *Config) CreateOpening(filename string, size int, kernelType KernelType) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+	binaryImg := imgInfo.NewBinary(128)
+
+	binaryImgInfo := NewImageInfo(binaryImg)
+	erosionImg := binaryImgInfo.NewErosion(size, kernelType)
+
+	erosionImgInfo := NewImageInfo(erosionImg)
+	processedImg := erosionImgInfo.NewDilation(size, kernelType)
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateClosing(filename string, size int, kernelType KernelType) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+	binaryImg := imgInfo.NewBinary(128)
+
+	binaryImgInfo := NewImageInfo(binaryImg)
+	dilationImg := binaryImgInfo.NewDilation(size, kernelType)
+
+	dilationImgInfo := NewImageInfo(dilationImg)
+	processedImg := dilationImgInfo.NewErosion(size, kernelType)
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateContour(filename string) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+	binaryImg := imgInfo.NewBinary(128)
+
+	binaryImgInfo := NewImageInfo(binaryImg)
+	processedImg := binaryImgInfo.NewContour()
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Dummy
 func (app *Config) TestImageManipulation(filename string) error {
 	// Ill keep this function like this as an example of all the steps needed to do the stuff

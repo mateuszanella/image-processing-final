@@ -38,6 +38,10 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/gaussian-sdf", app.HandleGaussianFilter())
 
 	mux.Handle("POST /api/dilation", app.HandleDilation())
+	mux.Handle("POST /api/erosion", app.HandleErosion())
+	mux.Handle("POST /api/opening", app.HandleOpening())
+	mux.Handle("POST /api/closing", app.HandleClosing())
+	mux.Handle("POST /api/contour", app.HandleContour())
 
 	// templ routes
 	c := layout.Base(view.Index())

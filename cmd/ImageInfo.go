@@ -347,6 +347,60 @@ func (imgInfo *ImageInfo) NewDilation(size int, kernelType KernelType) *image.RG
 	return img
 }
 
+func (imgInfo *ImageInfo) NewErosion(size int, kernelType KernelType) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	kernel := GenerateKernel(size, kernelType)
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := uint32(255)
+			g := uint32(255)
+			b := uint32(255)
+
+			for i := -size / 2; i <= size/2; i++ {
+				for j := -size / 2; j <= size/2; j++ {
+					if y+i < 0 || y+i >= imgInfo.Height || x+j < 0 || x+j >= imgInfo.Width {
+						continue
+					}
+
+					if kernel[i+size/2][j+size/2] == 1 {
+						r = min(r, uint32(imgInfo.Pixels[y+i][x+j].R))
+						g = min(g, uint32(imgInfo.Pixels[y+i][x+j].G))
+						b = min(b, uint32(imgInfo.Pixels[y+i][x+j].B))
+					}
+				}
+			}
+
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) NewContour() *image.RGBA {
+	eroded := imgInfo.NewErosion(3, Square)
+	contour := imgInfo.SubtractImage(NewImageInfo(eroded))
+
+	return contour
+}
+
+func (imgInfo *ImageInfo) SubtractImage(img2 *ImageInfo) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := subtractWithLimit(imgInfo.Pixels[y][x].R, uint8(img2.Pixels[y][x].R))
+			g := subtractWithLimit(imgInfo.Pixels[y][x].G, uint8(img2.Pixels[y][x].G))
+			b := subtractWithLimit(imgInfo.Pixels[y][x].B, uint8(img2.Pixels[y][x].B))
+			img.Set(x, y, color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), 255})
+		}
+	}
+
+	return img
+}
+
 // Logical Operations
 func (imgInfo *ImageInfo) NewNot(img2 *ImageInfo) *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
