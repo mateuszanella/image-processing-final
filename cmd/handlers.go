@@ -321,6 +321,19 @@ func (app *Config) HandleCreateNegativeFilter() http.Handler {
 	})
 }
 
+func (app *Config) HandleCreateHisogramEqualization() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreateHistogramEqualization(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to create histogram equalization: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
 // Components
 func (app *Config) HandleDisplayComponent() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

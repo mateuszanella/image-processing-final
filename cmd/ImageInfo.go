@@ -173,6 +173,37 @@ func (imgInfo *ImageInfo) NewNegative(img2 *ImageInfo) *image.RGBA {
 	return img
 }
 
+func (imgInfo *ImageInfo) NewHistogramEqualization() *image.Gray {
+	img := image.NewGray(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	histogram := make([]int, 256)
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r, g, b := imgInfo.Pixels[y][x].R, imgInfo.Pixels[y][x].G, imgInfo.Pixels[y][x].B
+			gray := uint8(0.299*float64(r) + 0.587*float64(g) + 0.114*float64(b))
+			histogram[gray]++
+		}
+	}
+
+	cumHistogram := make([]int, 256) // Cumulative histogram
+	cumHistogram[0] = histogram[0]
+	for i := 1; i < 256; i++ {
+		cumHistogram[i] = cumHistogram[i-1] + histogram[i]
+	}
+
+	totalPixels := imgInfo.Width * imgInfo.Height
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r, g, b := imgInfo.Pixels[y][x].R, imgInfo.Pixels[y][x].G, imgInfo.Pixels[y][x].B
+			grayValue := uint8(0.299*float64(r) + 0.587*float64(g) + 0.114*float64(b))
+			pixelValue := float64(cumHistogram[grayValue]) / float64(totalPixels)
+			img.SetGray(x, y, color.Gray{Y: uint8(pixelValue * 255)})
+		}
+	}
+
+	return img
+}
+
 // Logical Operations
 func (imgInfo *ImageInfo) NewNot(img2 *ImageInfo) *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))

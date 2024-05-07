@@ -31,6 +31,7 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/not", app.HandleNotOpertion())
 
 	mux.Handle("POST /api/negative", app.HandleCreateNegativeFilter())
+	mux.Handle("POST /api/histogram-equalization", app.HandleCreateHisogramEqualization())
 
 	// templ routes
 	c := layout.Base(view.Index())

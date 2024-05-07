@@ -81,6 +81,11 @@ async function applyBinaryAndRefresh() {
     refreshImage();
 }
 
+async function applyHistogramEqualizationAndRefresh() {
+    await fetch('/api/histogram-equalization', { method: 'POST' });
+    refreshImage();
+}
+
 async function applyNegativeAndRefresh() {
     await fetch('/api/negative', { method: 'POST' });
     refreshImage();
