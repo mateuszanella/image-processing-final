@@ -336,6 +336,40 @@ func (app *Config) HandleCreateHisogramEqualization() http.Handler {
 	})
 }
 
+// Spatial Domain Filters
+func (app *Config) HandleMeanFilter() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			Size string `json:"size"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		size := 3
+		if data.Size != "" {
+			size, err = strconv.Atoi(data.Size)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.CreateMeanFilter(filename, size)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply mean filter: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+// ********** //
 // Components
 func (app *Config) HandleDisplayComponent() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

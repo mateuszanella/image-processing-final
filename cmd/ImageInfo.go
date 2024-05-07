@@ -204,6 +204,40 @@ func (imgInfo *ImageInfo) NewHistogramEqualization() *image.Gray {
 	return img
 }
 
+// Spatial Domain Filters
+func (imgInfo *ImageInfo) NewMeanFilter(size int) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := uint32(0)
+			g := uint32(0)
+			b := uint32(0)
+			count := 0
+
+			for i := -size; i <= size; i++ {
+				for j := -size; j <= size; j++ {
+					if y+i < 0 || y+i >= imgInfo.Height || x+j < 0 || x+j >= imgInfo.Width {
+						continue
+					}
+
+					r += imgInfo.Pixels[y+i][x+j].R
+					g += imgInfo.Pixels[y+i][x+j].G
+					b += imgInfo.Pixels[y+i][x+j].B
+					count++
+				}
+			}
+
+			r /= uint32(count)
+			g /= uint32(count)
+			b /= uint32(count)
+			img.Set(x, y, color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), 255})
+		}
+	}
+
+	return img
+}
+
 // Logical Operations
 func (imgInfo *ImageInfo) NewNot(img2 *ImageInfo) *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))

@@ -148,3 +148,16 @@ async function applyNOTAndRefresh() {
     await fetch('/api/not', { method: 'POST' });
     refreshImage();
 }
+
+// Spatial domain filters
+async function applyMeanFilterAndRefresh() {
+    var size = document.getElementById("mean-filter-size").value;
+    await fetch('/api/mean-sdf', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ size: size }) 
+    });
+    refreshImage();
+}

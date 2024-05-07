@@ -17,7 +17,7 @@ npm run watch
 3. ~~Allow conversion from RGB to Grayscale.~~
 4. ~~Perform Arithmetic Operations on the image(s) (Addition, Subtraction, Multiplication, Division,~~ and Blending).
 5. Perform Logical Operations on the image(s) (AND, OR, XOR, ~~NOT~~).
-6. Perform Histogram Equalization on a grayscale image.
+6. ~~Perform Histogram Equalization on a grayscale image.~~
 7. ~~Perform Negative Transformation on an image.~~
 8. Perform the following Spatial Domain Filtering:
     1. Average
