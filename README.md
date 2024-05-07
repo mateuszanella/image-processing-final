@@ -19,10 +19,10 @@ npm run watch
 5. Perform Logical Operations on the image(s) (AND, OR, XOR, ~~NOT~~).
 6. ~~Perform Histogram Equalization on a grayscale image.~~
 7. ~~Perform Negative Transformation on an image.~~
-8. Perform the following Spatial Domain Filtering:
+8. ~~Perform the following Spatial Domain Filtering:~~
     1. ~~Average~~
     2. ~~Median~~
-    3. Gaussian
-    4. Order
+    3. ~~Gaussian~~
+    4. Order (?)
 9. Perform Morphological Operations (Dilation, Erosion, Opening, Closing, Contour).
 10. Perform Edge Detection Filters (Prewitt, Sobel, Laplacian).

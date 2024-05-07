@@ -12,6 +12,12 @@ import (
 	"github.com/a-h/templ"
 )
 
+var kernelTypeMap = map[string]KernelType{
+	"cross":   Cross,
+	"square":  Square,
+	"diamond": Diamond,
+}
+
 // Image updates
 func (app *Config) HandleStaticFiles() http.Handler {
 	fs := http.FileServer(http.Dir("./static"))
@@ -431,6 +437,55 @@ func (app *Config) HandleGaussianFilter() http.Handler {
 
 		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
 	})
+}
+
+// Morphological Operations
+func (app *Config) HandleDilation() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			KernelType string `json:"kernelType"`
+			Size       string `json:"size"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		kernelType, err := getKernelTypeFromString(data.KernelType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse kernel type: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		size := 3
+		if data.Size != "" {
+			size, err = strconv.Atoi(data.Size)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.CreateDilation(filename, size, kernelType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply dilation: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+// Helpers
+func getKernelTypeFromString(s string) (KernelType, error) {
+	kernelType, ok := kernelTypeMap[s]
+	if !ok {
+		return 0, fmt.Errorf("invalid kernel type: %s", s)
+	}
+	return kernelType, nil
 }
 
 // ********** //

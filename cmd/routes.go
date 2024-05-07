@@ -37,6 +37,8 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/median-sdf", app.HandleMedianFilter())
 	mux.Handle("POST /api/gaussian-sdf", app.HandleGaussianFilter())
 
+	mux.Handle("POST /api/dilation", app.HandleDilation())
+
 	// templ routes
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))

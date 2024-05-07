@@ -17,6 +17,14 @@ type ImageInfo struct {
 	Pixels [][]RGB
 }
 
+type KernelType int
+
+const (
+	Cross KernelType = iota
+	Square
+	Diamond
+)
+
 func NewImageInfo(img image.Image) *ImageInfo {
 	bounds := img.Bounds()
 	width, height := bounds.Max.X, bounds.Max.Y
@@ -306,6 +314,39 @@ func (imgInfo *ImageInfo) NewGaussianFilter(size int) *image.RGBA {
 	return img
 }
 
+// Morphological Operations
+func (imgInfo *ImageInfo) NewDilation(size int, kernelType KernelType) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	kernel := GenerateKernel(size, kernelType)
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := uint32(0)
+			g := uint32(0)
+			b := uint32(0)
+
+			for i := -size / 2; i <= size/2; i++ {
+				for j := -size / 2; j <= size/2; j++ {
+					if y+i < 0 || y+i >= imgInfo.Height || x+j < 0 || x+j >= imgInfo.Width {
+						continue
+					}
+
+					if kernel[i+size/2][j+size/2] == 1 {
+						r = max(r, imgInfo.Pixels[y+i][x+j].R)
+						g = max(g, imgInfo.Pixels[y+i][x+j].G)
+						b = max(b, imgInfo.Pixels[y+i][x+j].B)
+					}
+				}
+			}
+
+			img.Set(x, y, color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), 255})
+		}
+	}
+
+	return img
+}
+
 // Logical Operations
 func (imgInfo *ImageInfo) NewNot(img2 *ImageInfo) *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
@@ -349,6 +390,38 @@ func GaussianKernel(size int, sigma float64) [][]float64 {
 	for i := range kernel {
 		for j := range kernel[i] {
 			kernel[i][j] /= sum
+		}
+	}
+
+	return kernel
+}
+
+func GenerateKernel(size int, kernelType KernelType) [][]uint8 {
+	kernel := make([][]uint8, size)
+	for i := range kernel {
+		kernel[i] = make([]uint8, size)
+	}
+
+	mid := size / 2
+
+	switch kernelType {
+	case Cross:
+		for i := 0; i < size; i++ {
+			kernel[mid][i] = 1
+			kernel[i][mid] = 1
+		}
+	case Square:
+		for i := 0; i < size; i++ {
+			for j := 0; j < size; j++ {
+				kernel[i][j] = 1
+			}
+		}
+	case Diamond:
+		for i := 0; i <= mid; i++ {
+			for j := mid - i; j <= mid+i; j++ {
+				kernel[i][j] = 1
+				kernel[size-i-1][j] = 1
+			}
 		}
 	}
 

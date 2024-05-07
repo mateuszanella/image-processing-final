@@ -186,10 +186,9 @@ func (app *Config) NotOpertion(filename string) error {
 	}
 
 	imgInfo := NewImageInfo(img)
-
 	binaryImg := imgInfo.NewBinary(128)
-	binaryImgInfo := NewImageInfo(binaryImg)
 
+	binaryImgInfo := NewImageInfo(binaryImg)
 	processedImg := imgInfo.NewNot(binaryImgInfo)
 
 	err = app.saveImage(processedImg, "output.jpg")
@@ -303,6 +302,31 @@ func (app *Config) CreateGaussianFilter(filename string, size int) error {
 	imgInfo := NewImageInfo(img)
 
 	processedImg := imgInfo.NewGaussianFilter(size)
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Morphological Operations
+func (app *Config) CreateDilation(filename string, size int, kernelType KernelType) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+	binaryImg := imgInfo.NewBinary(128)
+
+	binaryImgInfo := NewImageInfo(binaryImg)
+	processedImg := binaryImgInfo.NewDilation(size, kernelType)
 
 	err = app.saveImage(processedImg, "output.jpg")
 	if err != nil {

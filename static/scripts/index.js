@@ -185,3 +185,20 @@ async function applyGaussianFilterAndRefresh() {
     });
     refreshImage();
 }
+
+// Morphological operations
+async function applyDilationAndRefresh() {
+    var size = document.getElementById("dilation-matrix-size").value;
+    var kernelType = document.getElementById("dilation-kernel-type").value;
+    await fetch('/api/dilation', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            size: size,
+            kernelType: kernelType
+        }) 
+    });
+    refreshImage();
+}

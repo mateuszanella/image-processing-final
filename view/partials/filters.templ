@@ -4,13 +4,16 @@ import "image-processing/view/partials/basic_operations"
 import "image-processing/view/partials/filters"
 import "image-processing/view/partials/logic_operations"
 import "image-processing/view/partials/spacial_domain_filters"
+import "image-processing/view/partials/morphological_operations"
 
 templ Filters() {
     <div class="flex flex-col gap-2">
         <div class="grid gap-2">
+
+            @Divider()
+
             @filters.GrayscaleFilterButton()
             @filters.HistogramEqualizationFilterButton()
-            @filters.BinaryFilterButton()
             @filters.NegativeFilterButton()
 
             @Divider()
@@ -22,6 +25,7 @@ templ Filters() {
 
             @Divider()
 
+            @filters.BinaryFilterButton()
             @logic_operations.NotOperationButton()
 
             @Divider()
@@ -30,6 +34,10 @@ templ Filters() {
             @spacial_domain_filters.MedianFilterButton()
             @spacial_domain_filters.GaussianFilterButton()
             <p class="text-xs italic text-gray-500 dark:text-gray-400" >*Large images might take a while to process</p>
+
+            @Divider()
+
+            @morphological_operations.DilationFilterButton()
         </div>
     </div>
 	<script>
