@@ -20,16 +20,14 @@ templ Dropzone() {
 		</button>
 	</form>
 	<script>
-        let file;
-
         document.getElementById('dropzone-file').addEventListener('change', async function() {
-            const label = document.querySelector('label[for="dropzone-file"]');
+            let label = document.querySelector('label[for="dropzone-file"]');
             file = this.files[0];
             if (file) {
                 label.classList.remove('border-dashed');
                 label.classList.add('border-solid', 'border-blue-500');
 
-                const reader = new FileReader();
+                let reader = new FileReader();
                 reader.onload = function(e) {
                     label.style.backgroundImage = `url(${e.target.result})`;
                 }

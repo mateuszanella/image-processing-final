@@ -1,5 +1,6 @@
 // The whole application relies on this 
 // *-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-*
+let file; // File object to be uploaded
 
 async function refreshImage() {
     return new Promise((resolve, reject) => {
@@ -16,7 +17,7 @@ async function refreshImage() {
 }
 
 async function uploadImage(file) {
-    const formData = new FormData();
+    let formData = new FormData();
     formData.append('image', file);
 
     return new Promise(async (resolve, reject) => {

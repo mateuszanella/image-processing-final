@@ -27,22 +27,24 @@ func (app *Config) HandleUploadImage() http.Handler {
 		}
 		defer file.Close()
 
-		// fileName := uuid.New().String() + ".jpg"
+		out, err := os.Create("./storage/" + "uploaded.jpg")
+		if err != nil {
+			http.Error(w, "Failed to open file", http.StatusInternalServerError)
+			return
+		}
+		defer out.Close()
 
-		// out, err := os.Create("./storage/" + fileName)
-		// if err != nil {
-		// 	http.Error(w, "Failed to open file", http.StatusInternalServerError)
-		// 	return
-		// }
-		// defer out.Close()
+		_, err = io.Copy(out, file)
+		if err != nil {
+			http.Error(w, "Failed to save image", http.StatusInternalServerError)
+			return
+		}
 
-		// _, err = io.Copy(out, file)
-		// if err != nil {
-		// 	http.Error(w, "Failed to save image", http.StatusInternalServerError)
-		// 	return
-		// }
-
-		// file.Seek(0, 0)
+		_, err = file.Seek(0, 0)
+		if err != nil {
+			http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
+			return
+		}
 
 		out2, err := os.Create("./storage/" + "output.jpg")
 		if err != nil {
