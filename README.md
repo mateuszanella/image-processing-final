@@ -24,5 +24,5 @@ npm run watch
     2. ~~Median~~
     3. ~~Gaussian~~
     4. Order (?)
-9. Perform Morphological Operations (Dilation, Erosion, Opening, Closing, Contour).
+9. ~~Perform Morphological Operations (Dilation, Erosion, Opening, Closing, Contour).~~
 10. Perform Edge Detection Filters (Prewitt, Sobel, Laplacian).
