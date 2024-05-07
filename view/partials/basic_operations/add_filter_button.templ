@@ -1,4 +1,4 @@
-package partials
+package basic_operations
 
 templ AddValueFilterButton() {
     <div class="grid grid-cols-2 gap-2">
@@ -7,19 +7,4 @@ templ AddValueFilterButton() {
             Add
         </button>
     </div>
-    <script>
-        async function applyAddAndRefresh() {
-            var value = document.getElementById("add-value").value;
-            await fetch('/api/add', { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    value: value 
-                }) 
-            });
-            await refreshImage();
-        }
-    </script>
 }

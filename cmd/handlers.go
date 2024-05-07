@@ -10,8 +10,13 @@ import (
 	"strconv"
 
 	"github.com/a-h/templ"
-	"github.com/google/uuid"
 )
+
+var kernelTypeMap = map[string]KernelType{
+	"cross":   Cross,
+	"square":  Square,
+	"diamond": Diamond,
+}
 
 // Image updates
 func (app *Config) HandleStaticFiles() http.Handler {
@@ -28,9 +33,7 @@ func (app *Config) HandleUploadImage() http.Handler {
 		}
 		defer file.Close()
 
-		fileName := uuid.New().String() + ".jpg"
-
-		out, err := os.Create("./storage/" + fileName)
+		out, err := os.Create("./storage/" + "uploaded.jpg")
 		if err != nil {
 			http.Error(w, "Failed to open file", http.StatusInternalServerError)
 			return
@@ -43,7 +46,11 @@ func (app *Config) HandleUploadImage() http.Handler {
 			return
 		}
 
-		file.Seek(0, 0)
+		_, err = file.Seek(0, 0)
+		if err != nil {
+			http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
+			return
+		}
 
 		out2, err := os.Create("./storage/" + "output.jpg")
 		if err != nil {
@@ -113,6 +120,8 @@ func (app *Config) HandleTestImageManipulation() http.Handler {
 }
 
 // Image filters
+
+// Basic
 func (app *Config) HandleCreateGrayscale() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filename := r.FormValue("output")
@@ -158,6 +167,7 @@ func (app *Config) HandleCreateBinary() http.Handler {
 	})
 }
 
+// Basic Operations
 func (app *Config) HandleAddValue() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filename := r.FormValue("image")
@@ -291,6 +301,324 @@ func (app *Config) HandleDivideValue() http.Handler {
 	})
 }
 
+// Logical Operations
+func (app *Config) HandleNotOpertion() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.NotOpertion(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply not operation: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+// Basic Filters
+func (app *Config) HandleCreateNegativeFilter() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreateNegative(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to create negative filter: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleCreateHisogramEqualization() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreateHistogramEqualization(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to create histogram equalization: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+// Spatial Domain Filters
+func (app *Config) HandleMeanFilter() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			Size string `json:"size"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		size := 3
+		if data.Size != "" {
+			size, err = strconv.Atoi(data.Size)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.CreateMeanFilter(filename, size)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply mean filter: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleMedianFilter() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			Size string `json:"size"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		size := 3
+		if data.Size != "" {
+			size, err = strconv.Atoi(data.Size)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.CreateMedianFilter(filename, size)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply median filter: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleGaussianFilter() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			Size string `json:"size"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		size := 3
+		if data.Size != "" {
+			size, err = strconv.Atoi(data.Size)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.CreateGaussianFilter(filename, size)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply gaussian filter: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+// Morphological Operations
+func (app *Config) HandleDilation() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			KernelType string `json:"kernelType"`
+			Size       string `json:"size"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		kernelType, err := getKernelTypeFromString(data.KernelType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse kernel type: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		size := 3
+		if data.Size != "" {
+			size, err = strconv.Atoi(data.Size)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.CreateDilation(filename, size, kernelType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply dilation: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleErosion() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			KernelType string `json:"kernelType"`
+			Size       string `json:"size"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		kernelType, err := getKernelTypeFromString(data.KernelType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse kernel type: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		size := 3
+		if data.Size != "" {
+			size, err = strconv.Atoi(data.Size)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.CreateErosion(filename, size, kernelType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply erosion: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleOpening() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			KernelType string `json:"kernelType"`
+			Size       string `json:"size"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		kernelType, err := getKernelTypeFromString(data.KernelType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse kernel type: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		size := 3
+		if data.Size != "" {
+			size, err = strconv.Atoi(data.Size)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.CreateOpening(filename, size, kernelType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply opening: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleClosing() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+
+		var data struct {
+			KernelType string `json:"kernelType"`
+			Size       string `json:"size"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		kernelType, err := getKernelTypeFromString(data.KernelType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse kernel type: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		size := 3
+		if data.Size != "" {
+			size, err = strconv.Atoi(data.Size)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		err = app.CreateClosing(filename, size, kernelType)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply closing: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleContour() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreateContour(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to create contour: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+// Helpers
+func getKernelTypeFromString(s string) (KernelType, error) {
+	kernelType, ok := kernelTypeMap[s]
+	if !ok {
+		return 0, fmt.Errorf("invalid kernel type: %s", s)
+	}
+	return kernelType, nil
+}
+
+// ********** //
 // Components
 func (app *Config) HandleDisplayComponent() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

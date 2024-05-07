@@ -1,4 +1,4 @@
-package partials
+package filters
 
 templ BinaryFilterButton() {
     <div class="grid grid-cols-2 gap-2">
@@ -7,17 +7,4 @@ templ BinaryFilterButton() {
             Binary
         </button>
     </div>
-    <script>
-        async function applyBinaryAndRefresh() {
-            var threshold = document.getElementById("threshold").value;
-            await fetch('/api/binary', { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ threshold: threshold }) 
-            });
-            await refreshImage();
-        }
-    </script>
 }

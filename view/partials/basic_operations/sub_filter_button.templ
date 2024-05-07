@@ -1,4 +1,4 @@
-package partials
+package basic_operations
 
 templ SubValueFilterButton() {
     <div class="grid grid-cols-2 gap-2">
@@ -7,17 +7,4 @@ templ SubValueFilterButton() {
             Subtract
         </button>
     </div>
-    <script>
-        async function applySubAndRefresh() {
-            var value = document.getElementById("sub-value").value;
-            await fetch('/api/subtract', { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ value: value }) 
-            });
-            await refreshImage();
-        }
-    </script>
 }

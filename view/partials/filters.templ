@@ -1,17 +1,47 @@
 package partials
 
+import "image-processing/view/partials/basic_operations"
+import "image-processing/view/partials/filters"
+import "image-processing/view/partials/logic_operations"
+import "image-processing/view/partials/spacial_domain_filters"
+import "image-processing/view/partials/morphological_operations"
+
 templ Filters() {
     <div class="flex flex-col gap-2">
         <div class="grid gap-2">
-            @GrayscaleFilterButton()
-            @BinaryFilterButton()
 
             @Divider()
 
-            @AddValueFilterButton()
-            @SubValueFilterButton()
-            @MulValueFilterButton()
-            @DivValueFilterButton()
+            @filters.GrayscaleFilterButton()
+            @filters.HistogramEqualizationFilterButton()
+            @filters.NegativeFilterButton()
+
+            @Divider()
+
+            @basic_operations.AddValueFilterButton()
+            @basic_operations.SubValueFilterButton()
+            @basic_operations.MulValueFilterButton()
+            @basic_operations.DivValueFilterButton()
+
+            @Divider()
+
+            @filters.BinaryFilterButton()
+            @logic_operations.NotOperationButton()
+
+            @Divider()
+
+            @spacial_domain_filters.MeanFilterButton()
+            @spacial_domain_filters.MedianFilterButton()
+            @spacial_domain_filters.GaussianFilterButton()
+            <p class="text-xs italic text-gray-500 dark:text-gray-400" >*Large images might take a while to process</p>
+
+            @Divider()
+
+            @morphological_operations.DilationFilterButton()
+            @morphological_operations.ErosionFilterButton()
+            @morphological_operations.OpeningFilterButton()
+            @morphological_operations.ClosingFilterButton()
+            @morphological_operations.ContourFilterButton()
         </div>
     </div>
 	<script>

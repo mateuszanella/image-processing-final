@@ -1,4 +1,4 @@
-package partials
+package basic_operations
 
 templ DivValueFilterButton() {
     <div class="grid grid-cols-2 gap-2">
@@ -7,17 +7,4 @@ templ DivValueFilterButton() {
             Divide
         </button>
     </div>
-    <script>
-        async function applyDivAndRefresh() {
-            var value = document.getElementById("div-value").value;
-            await fetch('/api/divide', { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ value: value }) 
-            });
-            await refreshImage();
-        }
-    </script>
 }

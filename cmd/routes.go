@@ -28,6 +28,21 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/multiply", app.HandleMultiplyValue())
 	mux.Handle("POST /api/divide", app.HandleDivideValue())
 
+	mux.Handle("POST /api/not", app.HandleNotOpertion())
+
+	mux.Handle("POST /api/negative", app.HandleCreateNegativeFilter())
+	mux.Handle("POST /api/histogram-equalization", app.HandleCreateHisogramEqualization())
+
+	mux.Handle("POST /api/mean-sdf", app.HandleMeanFilter())
+	mux.Handle("POST /api/median-sdf", app.HandleMedianFilter())
+	mux.Handle("POST /api/gaussian-sdf", app.HandleGaussianFilter())
+
+	mux.Handle("POST /api/dilation", app.HandleDilation())
+	mux.Handle("POST /api/erosion", app.HandleErosion())
+	mux.Handle("POST /api/opening", app.HandleOpening())
+	mux.Handle("POST /api/closing", app.HandleClosing())
+	mux.Handle("POST /api/contour", app.HandleContour())
+
 	// templ routes
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))

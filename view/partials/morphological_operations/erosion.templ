@@ -1,0 +1,21 @@
+package morphological_operations
+
+templ ErosionFilterButton() {
+    <div class="flex flex-col">
+        <div class="flex items-center mb-4">
+            <select id="erosion-matrix-size" class="w-full mr-2 border border-input bg-background h-9 rounded-md px-3">
+                <option value="3">3x3</option>
+                <option value="7">7x7</option>
+                <option value="9">9x9</option>
+            </select>
+            <select id="erosion-kernel-type" class="w-full mr-2 border border-input bg-background h-9 rounded-md px-3">
+                <option value="cross">Cross</option>
+                <option value="square">Square</option>
+                <option value="diamond">Diamond</option>
+            </select>
+        </div>
+        <button class="w-full inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 hover:bg-gray-200" onclick="applyErosionAndRefresh()">
+            Apply Erosion
+        </button>
+    </div>
+}
