@@ -161,3 +161,15 @@ async function applyMeanFilterAndRefresh() {
     });
     refreshImage();
 }
+
+async function applyMedianFilterAndRefresh() {
+    var size = document.getElementById("median-filter-size").value;
+    await fetch('/api/median-sdf', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ size: size }) 
+    });
+    refreshImage();
+}

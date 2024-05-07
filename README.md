@@ -20,7 +20,7 @@ npm run watch
 6. ~~Perform Histogram Equalization on a grayscale image.~~
 7. ~~Perform Negative Transformation on an image.~~
 8. Perform the following Spatial Domain Filtering:
-    1. Average
+    1. ~~Average~~
     2. Median
     3. Gaussian
     4. Order

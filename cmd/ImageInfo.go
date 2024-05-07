@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"image/color"
+	"sort"
 )
 
 type RGB struct {
@@ -232,6 +233,39 @@ func (imgInfo *ImageInfo) NewMeanFilter(size int) *image.RGBA {
 			g /= uint32(count)
 			b /= uint32(count)
 			img.Set(x, y, color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), 255})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) NewMedianFilter(size int) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := make([]uint32, 0)
+			g := make([]uint32, 0)
+			b := make([]uint32, 0)
+
+			for i := -size; i <= size; i++ {
+				for j := -size; j <= size; j++ {
+					if y+i < 0 || y+i >= imgInfo.Height || x+j < 0 || x+j >= imgInfo.Width {
+						continue
+					}
+
+					r = append(r, imgInfo.Pixels[y+i][x+j].R)
+					g = append(g, imgInfo.Pixels[y+i][x+j].G)
+					b = append(b, imgInfo.Pixels[y+i][x+j].B)
+				}
+			}
+
+			sort.Slice(r, func(i, j int) bool { return r[i] < r[j] })
+			sort.Slice(g, func(i, j int) bool { return g[i] < g[j] })
+			sort.Slice(b, func(i, j int) bool { return b[i] < b[j] })
+
+			median := len(r) / 2
+			img.Set(x, y, color.RGBA{uint8(r[median] >> 8), uint8(g[median] >> 8), uint8(b[median] >> 8), 255})
 		}
 	}
 

@@ -34,6 +34,7 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/histogram-equalization", app.HandleCreateHisogramEqualization())
 
 	mux.Handle("POST /api/mean-sdf", app.HandleMeanFilter())
+	mux.Handle("POST /api/median-sdf", app.HandleMedianFilter())
 
 	// templ routes
 	c := layout.Base(view.Index())

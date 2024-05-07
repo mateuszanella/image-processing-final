@@ -268,6 +268,28 @@ func (app *Config) CreateMeanFilter(filename string, size int) error {
 	return nil
 }
 
+func (app *Config) CreateMedianFilter(filename string, size int) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.NewMedianFilter(size)
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Dummy
 func (app *Config) TestImageManipulation(filename string) error {
 	// Ill keep this function like this as an example of all the steps needed to do the stuff
