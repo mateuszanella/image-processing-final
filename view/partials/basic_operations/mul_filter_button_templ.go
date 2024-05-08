@@ -23,7 +23,7 @@ func MulValueFilterButton() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"grid grid-cols-2 gap-2\"><input id=\"mul-value\" type=\"number\" min=\"0\" max=\"255\" value=\"128\" class=\"w-full mr-2 border border-input bg-background h-9 rounded-md px-3\"> <button class=\"w-full inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 hover:bg-gray-200\" onclick=\"applyMulAndRefresh()\">Multiply</button></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"grid grid-cols-2 gap-2\"><input id=\"mul-value\" type=\"number\" min=\"0\" max=\"64\" value=\"2\" class=\"w-full mr-2 border border-input bg-background h-9 rounded-md px-3\"> <button class=\"w-full inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 hover:bg-gray-200\" onclick=\"applyMulAndRefresh()\">Multiply</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
