@@ -505,6 +505,89 @@ func (app *Config) CreateLaplacianEdgeDetection(filename string) error {
 	return nil
 }
 
+// *-**-* Bonus *-**-*
+
+// Image Adjustments
+func (app *Config) CreateFlipLR(filename string) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	processedImg := NewImageInfo(img).FlipLR()
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateFlipUD(filename string) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	processedImg := NewImageInfo(img).FlipUD()
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateRotate90(filename string) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	processedImg := NewImageInfo(img).Rotate90()
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateRotate270(filename string) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	processedImg := NewImageInfo(img).Rotate270()
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Dummy
 func (app *Config) TestImageManipulation(filename string) error {
 	// Ill keep this function like this as an example of all the steps needed to do the stuff

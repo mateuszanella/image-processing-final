@@ -649,6 +649,61 @@ func (app *Config) HandleLaplacianEdgeDetection() http.Handler {
 	})
 }
 
+// *-**-* Bonus *-**-*
+
+// Image Adjustments
+func (app *Config) HandleFlipLR() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreateFlipLR(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to flip image: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image flipped successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleFlipUD() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreateFlipUD(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to flip image: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image flipped successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleRotate90() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreateRotate90(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to rotate image: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image rotated successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleRotate270() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreateRotate270(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to rotate image: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image rotated successfully, check storage folder for output image")
+	})
+}
+
 // Helpers
 func getKernelTypeFromString(s string) (KernelType, error) {
 	kernelType, ok := kernelTypeMap[s]
@@ -677,5 +732,11 @@ func (app *Config) HandleDropzoneComponent() http.Handler {
 func (app *Config) HandleFiltersComponent() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		templ.Handler(partials.Filters()).ServeHTTP(w, r)
+	})
+}
+
+func (app *Config) HandleAdjustmentsComponent() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(partials.Adjustments()).ServeHTTP(w, r)
 	})
 }

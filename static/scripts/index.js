@@ -271,3 +271,26 @@ async function applyLaplacianEdgeDetectionAndRefresh() {
     await fetch('/api/laplacian', { method: 'POST' });
     refreshImage();
 }
+
+// *-**-* Bonus *-**-*
+
+// Image Adjustments
+async function flipLRAndRefresh() {
+    await fetch('/api/flip-lr', { method: 'POST' });
+    refreshImage();
+}
+
+async function flipUDAndRefresh() {
+    await fetch('/api/flip-ud', { method: 'POST' });
+    refreshImage();
+}
+
+async function rotate90AndRefresh() {
+    await fetch('/api/rotate-90', { method: 'POST' });
+    refreshImage();
+}
+
+async function rotate270AndRefresh() {
+    await fetch('/api/rotate-270', { method: 'POST' });
+    refreshImage();
+}

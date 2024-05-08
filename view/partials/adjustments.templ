@@ -1,0 +1,21 @@
+package partials
+
+import "image-processing/view/partials/adjustments"
+
+templ Adjustments() {
+    <div class="flex flex-col gap-2">
+        <div class="grid gap-2">
+
+            @Divider()
+
+            @adjustments.FlipLRrButton()
+            @adjustments.FlipUDButton()
+            @adjustments.Rotate90Button()
+            @adjustments.Rotate270Button()
+
+        </div>
+    </div>
+	<script>
+
+    </script>
+}

@@ -11,7 +11,7 @@ templ Index() {
 					<div class="flex flex-col gap-2">
 						<div class="grid gap-2">
 							@partials.ToolbarButton("Upload Image", "static/svgs/upload.svg", "/component/dropzone")
-							@partials.Button("Adjustments", "static/svgs/adjustments.svg")
+							@partials.ToolbarButton("Adjustments", "static/svgs/adjustments.svg", "/component/adjustments")
 							@partials.ToolbarButton("Filters", "static/svgs/filters.svg", "/component/filters")
 						</div>
 						<div id="imageProcessingControls" class="mt-4">
