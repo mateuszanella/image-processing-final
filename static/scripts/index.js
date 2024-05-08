@@ -261,3 +261,8 @@ async function applyPrewittEdgeDetectionAndRefresh() {
     await fetch('/api/prewitt', { method: 'POST' });
     refreshImage();
 }
+
+async function applySobelEdgeDetectionAndRefresh() {
+    await fetch('/api/sobel', { method: 'POST' });
+    refreshImage();
+}

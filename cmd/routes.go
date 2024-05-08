@@ -44,6 +44,7 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/contour", app.HandleContour())
 
 	mux.Handle("POST /api/prewitt", app.HandlePrewittEdgeDetection())
+	mux.Handle("POST /api/sobel", app.HandleSobelEdgeDetection())
 
 	// templ routes
 	c := layout.Base(view.Index())

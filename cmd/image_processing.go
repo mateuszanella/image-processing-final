@@ -460,6 +460,27 @@ func (app *Config) CreatePrewittEdgeDetection(filename string) error {
 
 	return nil
 }
+func (app *Config) CreateSobelEdgeDetection(filename string) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.NewSobelFilter()
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 // Dummy
 func (app *Config) TestImageManipulation(filename string) error {
