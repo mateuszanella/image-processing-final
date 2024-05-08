@@ -460,6 +460,7 @@ func (app *Config) CreatePrewittEdgeDetection(filename string) error {
 
 	return nil
 }
+
 func (app *Config) CreateSobelEdgeDetection(filename string) error {
 	if filename == "" {
 		filename = "uploaded"
@@ -473,6 +474,28 @@ func (app *Config) CreateSobelEdgeDetection(filename string) error {
 	imgInfo := NewImageInfo(img)
 
 	processedImg := imgInfo.NewSobelFilter()
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateLaplacianEdgeDetection(filename string) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.NewLaplacianFilter()
 
 	err = app.saveImage(processedImg, "output.jpg")
 	if err != nil {

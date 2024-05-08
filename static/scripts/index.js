@@ -266,3 +266,8 @@ async function applySobelEdgeDetectionAndRefresh() {
     await fetch('/api/sobel', { method: 'POST' });
     refreshImage();
 }
+
+async function applyLaplacianEdgeDetectionAndRefresh() {
+    await fetch('/api/laplacian', { method: 'POST' });
+    refreshImage();
+}

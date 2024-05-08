@@ -636,6 +636,19 @@ func (app *Config) HandleSobelEdgeDetection() http.Handler {
 	})
 }
 
+func (app *Config) HandleLaplacianEdgeDetection() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreateLaplacianEdgeDetection(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to create sobel edge detection: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
 // Helpers
 func getKernelTypeFromString(s string) (KernelType, error) {
 	kernelType, ok := kernelTypeMap[s]
