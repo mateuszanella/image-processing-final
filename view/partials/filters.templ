@@ -5,6 +5,7 @@ import "image-processing/view/partials/filters"
 import "image-processing/view/partials/logic_operations"
 import "image-processing/view/partials/spacial_domain_filters"
 import "image-processing/view/partials/morphological_operations"
+import "image-processing/view/partials/edge_detection"
 
 templ Filters() {
     <div class="flex flex-col gap-2">
@@ -42,6 +43,12 @@ templ Filters() {
             @morphological_operations.OpeningFilterButton()
             @morphological_operations.ClosingFilterButton()
             @morphological_operations.ContourFilterButton()
+
+            @Divider()
+
+            @edge_detection.PrewittEdgeDetectionButton()
+            @edge_detection.SobelEdgeDetectionButton()
+            @edge_detection.LaplacianEdgeDetectionButton()
         </div>
     </div>
 	<script>

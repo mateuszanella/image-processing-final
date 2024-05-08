@@ -417,6 +417,121 @@ func (imgInfo *ImageInfo) NewNot(img2 *ImageInfo) *image.RGBA {
 	return img
 }
 
+// Edge Detection
+func (imgInfo *ImageInfo) NewPrewittFilter() *image.Gray {
+	img := image.NewGray(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	kernelX := [][]int{
+		{-1, 0, 1},
+		{-1, 0, 1},
+		{-1, 0, 1},
+	}
+	kernelY := [][]int{
+		{-1, -1, -1},
+		{0, 0, 0},
+		{1, 1, 1},
+	}
+
+	for y := 1; y < imgInfo.Height-1; y++ {
+		for x := 1; x < imgInfo.Width-1; x++ {
+			grayX := 0
+			grayY := 0
+
+			for i := -1; i <= 1; i++ {
+				for j := -1; j <= 1; j++ {
+					rgb := imgInfo.Pixels[y+i][x+j]
+					gray := uint8(0.2126*float64(rgb.R>>8) + 0.7152*float64(rgb.G>>8) + 0.0722*float64(rgb.B>>8))
+
+					grayX += int(gray) * kernelX[i+1][j+1]
+					grayY += int(gray) * kernelY[i+1][j+1]
+				}
+			}
+
+			magnitude := math.Sqrt(float64(grayX*grayX + grayY*grayY))
+			normalizedMagnitude := magnitude / math.Sqrt(2*255*255) * 255
+			gray := uint8(normalizedMagnitude)
+
+			img.SetGray(x, y, color.Gray{Y: gray})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) NewSobelFilter() *image.Gray {
+	img := image.NewGray(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	kernelX := [][]int{
+		{-1, 0, 1},
+		{-2, 0, 2},
+		{-1, 0, 1},
+	}
+	kernelY := [][]int{
+		{-1, -2, -1},
+		{0, 0, 0},
+		{1, 2, 1},
+	}
+
+	for y := 1; y < imgInfo.Height-1; y++ {
+		for x := 1; x < imgInfo.Width-1; x++ {
+			grayX := 0
+			grayY := 0
+
+			for i := -1; i <= 1; i++ {
+				for j := -1; j <= 1; j++ {
+					rgb := imgInfo.Pixels[y+i][x+j]
+					gray := uint8(0.2126*float64(rgb.R>>8) + 0.7152*float64(rgb.G>>8) + 0.0722*float64(rgb.B>>8))
+
+					grayX += int(gray) * kernelX[i+1][j+1]
+					grayY += int(gray) * kernelY[i+1][j+1]
+				}
+			}
+
+			magnitude := math.Sqrt(float64(grayX*grayX + grayY*grayY))
+			normalizedMagnitude := magnitude / math.Sqrt(2*255*255) * 255
+			gray := uint8(normalizedMagnitude)
+
+			img.SetGray(x, y, color.Gray{Y: gray})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) NewLaplacianFilter() *image.Gray {
+	img := image.NewGray(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	kernel := [][]int{
+		{0, 1, 0},
+		{1, -4, 1},
+		{0, 1, 0},
+	}
+
+	for y := 1; y < imgInfo.Height-1; y++ {
+		for x := 1; x < imgInfo.Width-1; x++ {
+			pixelValue := 0
+
+			for i := -1; i <= 1; i++ {
+				for j := -1; j <= 1; j++ {
+					rgb := imgInfo.Pixels[y+i][x+j]
+					grayValue := uint8(0.2126*float64(rgb.R>>8) + 0.7152*float64(rgb.G>>8) + 0.0722*float64(rgb.B>>8))
+					pixelValue += int(grayValue) * kernel[i+1][j+1]
+				}
+			}
+
+			if pixelValue < 0 {
+				pixelValue = 0
+			} else if pixelValue > 255 {
+				pixelValue = 255
+			}
+
+			img.SetGray(x, y, color.Gray{Y: uint8(pixelValue)})
+		}
+	}
+
+	return img
+}
+
 // Helper functions
 func subtractWithLimit(value uint32, limit uint8) uint32 {
 	if value < uint32(limit) {

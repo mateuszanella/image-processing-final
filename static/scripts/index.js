@@ -255,3 +255,19 @@ async function applyContourAndRefresh() {
     await fetch('/api/contour', { method: 'POST' });
     refreshImage();
 }
+
+//Edge detection
+async function applyPrewittEdgeDetectionAndRefresh() {
+    await fetch('/api/prewitt', { method: 'POST' });
+    refreshImage();
+}
+
+async function applySobelEdgeDetectionAndRefresh() {
+    await fetch('/api/sobel', { method: 'POST' });
+    refreshImage();
+}
+
+async function applyLaplacianEdgeDetectionAndRefresh() {
+    await fetch('/api/laplacian', { method: 'POST' });
+    refreshImage();
+}

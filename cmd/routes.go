@@ -43,6 +43,10 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/closing", app.HandleClosing())
 	mux.Handle("POST /api/contour", app.HandleContour())
 
+	mux.Handle("POST /api/prewitt", app.HandlePrewittEdgeDetection())
+	mux.Handle("POST /api/sobel", app.HandleSobelEdgeDetection())
+	mux.Handle("POST /api/laplacian", app.HandleLaplacianEdgeDetection())
+
 	// templ routes
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))
