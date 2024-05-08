@@ -609,6 +609,20 @@ func (app *Config) HandleContour() http.Handler {
 	})
 }
 
+// Edge Detection
+func (app *Config) HandlePrewittEdgeDetection() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filename := r.FormValue("image")
+		err := app.CreatePrewittEdgeDetection(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to create prewitt edge detection: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
 // Helpers
 func getKernelTypeFromString(s string) (KernelType, error) {
 	kernelType, ok := kernelTypeMap[s]

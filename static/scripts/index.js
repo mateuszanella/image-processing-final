@@ -255,3 +255,9 @@ async function applyContourAndRefresh() {
     await fetch('/api/contour', { method: 'POST' });
     refreshImage();
 }
+
+//Edge detection
+async function applyPrewittEdgeDetectionAndRefresh() {
+    await fetch('/api/prewitt', { method: 'POST' });
+    refreshImage();
+}

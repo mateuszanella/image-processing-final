@@ -360,12 +360,6 @@ func (app *Config) CreateErosion(filename string, size int, kernelType KernelTyp
 	return nil
 }
 
-// Dilation: This operation expands or thickens objects in an image.
-// Erosion: This operation shrinks or thins objects in an image.
-// Opening: This operation is an erosion followed by a dilation. It is used to remove noise.
-// Closing: This operation is a dilation followed by an erosion. It is used to close small holes in the objects.
-// Contour: This operation is used to draw the boundary of objects in an image.
-
 func (app *Config) CreateOpening(filename string, size int, kernelType KernelType) error {
 	if filename == "" {
 		filename = "uploaded"
@@ -435,6 +429,29 @@ func (app *Config) CreateContour(filename string) error {
 
 	binaryImgInfo := NewImageInfo(binaryImg)
 	processedImg := binaryImgInfo.NewContour()
+
+	err = app.saveImage(processedImg, "output.jpg")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Edge Detection
+func (app *Config) CreatePrewittEdgeDetection(filename string) error {
+	if filename == "" {
+		filename = "uploaded"
+	}
+
+	img, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.NewPrewittFilter()
 
 	err = app.saveImage(processedImg, "output.jpg")
 	if err != nil {
