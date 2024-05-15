@@ -30,13 +30,18 @@ type BaseBody struct {
 }
 
 type BinaryBody struct {
-	Filename  string `json:"filename"`
+	BaseBody
 	Threshold string `json:"threshold"`
 }
 
 type BasicOperationsBody struct {
-	Filename string `json:"filename"`
-	Value    string `json:"value"`
+	BaseBody
+	Value string `json:"value"`
+}
+
+type SpatialDomainBody struct {
+	BaseBody
+	Size string `json:"size"`
 }
 
 // Image updates
@@ -380,8 +385,16 @@ func (app *Config) HandleDivideValue() http.Handler {
 // Logical Operations
 func (app *Config) HandleNotOpertion() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-		err := app.NotOpertion(filename)
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.NotOpertion(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to apply not operation: %v", err), http.StatusInternalServerError)
 			return
@@ -394,8 +407,16 @@ func (app *Config) HandleNotOpertion() http.Handler {
 // Basic Filters
 func (app *Config) HandleCreateNegativeFilter() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-		err := app.CreateNegative(filename)
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateNegative(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create negative filter: %v", err), http.StatusInternalServerError)
 			return
@@ -407,8 +428,16 @@ func (app *Config) HandleCreateNegativeFilter() http.Handler {
 
 func (app *Config) HandleCreateHisogramEqualization() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-		err := app.CreateHistogramEqualization(filename)
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateHistogramEqualization(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create histogram equalization: %v", err), http.StatusInternalServerError)
 			return
@@ -421,20 +450,17 @@ func (app *Config) HandleCreateHisogramEqualization() http.Handler {
 // Spatial Domain Filters
 func (app *Config) HandleMeanFilter() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			Size string `json:"size"`
-		}
-		err := json.NewDecoder(r.Body).Decode(&data)
+		var body SpatialDomainBody
+		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
 			return
 		}
 
+		filename := body.Filename
 		size := 3
-		if data.Size != "" {
-			size, err = strconv.Atoi(data.Size)
+		if body.Size != "" {
+			size, err = strconv.Atoi(body.Size)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
 				return
@@ -453,20 +479,17 @@ func (app *Config) HandleMeanFilter() http.Handler {
 
 func (app *Config) HandleMedianFilter() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			Size string `json:"size"`
-		}
-		err := json.NewDecoder(r.Body).Decode(&data)
+		var body SpatialDomainBody
+		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
 			return
 		}
 
+		filename := body.Filename
 		size := 3
-		if data.Size != "" {
-			size, err = strconv.Atoi(data.Size)
+		if body.Size != "" {
+			size, err = strconv.Atoi(body.Size)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
 				return
@@ -485,20 +508,17 @@ func (app *Config) HandleMedianFilter() http.Handler {
 
 func (app *Config) HandleGaussianFilter() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			Size string `json:"size"`
-		}
-		err := json.NewDecoder(r.Body).Decode(&data)
+		var body SpatialDomainBody
+		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
 			return
 		}
 
+		filename := body.Filename
 		size := 3
-		if data.Size != "" {
-			size, err = strconv.Atoi(data.Size)
+		if body.Size != "" {
+			size, err = strconv.Atoi(body.Size)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
 				return
