@@ -26,7 +26,8 @@ var kernelTypeMap = map[string]KernelType{
 }
 
 type RequestBody struct {
-	Filename string `json:"filename"`
+	Filename  string `json:"filename"`
+	Threshold string `json:"threshold"`
 }
 
 // Image updates
@@ -170,20 +171,18 @@ func (app *Config) HandleCreateGrayscale() http.Handler {
 
 func (app *Config) HandleCreateBinary() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			Threshold string `json:"threshold"`
-		}
-		err := json.NewDecoder(r.Body).Decode(&data)
+		var body RequestBody
+		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
 			return
 		}
 
+		filename := body.Filename
+
 		threshold := 128
-		if data.Threshold != "" {
-			threshold, err = strconv.Atoi(data.Threshold)
+		if body.Threshold != "" {
+			threshold, err = strconv.Atoi(body.Threshold)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse threshold: %v", err), http.StatusInternalServerError)
 				return

@@ -89,7 +89,10 @@ async function applyBinaryAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ threshold: threshold }) 
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            threshold: threshold 
+        }) 
     });
     refreshImage();
 }
