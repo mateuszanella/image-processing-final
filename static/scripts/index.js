@@ -72,7 +72,13 @@ async function resetDropzone() {
 
 // Filters
 async function applyGrayscaleAndRefresh() {
-    await fetch('/api/grayscale', { method: 'POST' });
+    await fetch('/api/grayscale', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
     refreshImage();
 }
 

@@ -25,12 +25,8 @@ var kernelTypeMap = map[string]KernelType{
 	"diamond": Diamond,
 }
 
-var formatMap = map[string]string{
-	"jpeg": "jpg",
-	"png":  "png",
-	"bmp":  "bmp",
-	"tiff": "tiff",
-	"gif":  "gif",
+type RequestBody struct {
+	Filename string `json:"filename"`
 }
 
 // Image updates
@@ -54,17 +50,17 @@ func (app *Config) HandleUploadImage() http.Handler {
 			return
 		}
 
-		if val, ok := formatMap[format]; ok {
-			format = val
+		_, err = file.Seek(0, 0)
+		if err != nil {
+			http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
+			return
 		}
-
 		out, err := os.Create("./storage/uploaded." + format)
 		if err != nil {
 			http.Error(w, "Failed to open file", http.StatusInternalServerError)
 			return
 		}
 		defer out.Close()
-
 		_, err = io.Copy(out, file)
 		if err != nil {
 			http.Error(w, "Failed to save image", http.StatusInternalServerError)
@@ -76,14 +72,12 @@ func (app *Config) HandleUploadImage() http.Handler {
 			http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
 			return
 		}
-
 		out2, err := os.Create("./storage/output." + format)
 		if err != nil {
 			http.Error(w, "Failed to open file", http.StatusInternalServerError)
 			return
 		}
 		defer out2.Close()
-
 		_, err = io.Copy(out2, file)
 		if err != nil {
 			http.Error(w, "Failed to save image", http.StatusInternalServerError)
@@ -100,10 +94,6 @@ func (app *Config) HandleGetImage() http.Handler {
 		if filetype == "" {
 			http.Error(w, "Filename not provided", http.StatusBadRequest)
 			return
-		}
-
-		if val, ok := formatMap[filetype]; ok {
-			filetype = val
 		}
 
 		filePath := "./storage/output." + filetype
@@ -159,20 +149,28 @@ func (app *Config) HandleTestImageManipulation() http.Handler {
 // Basic
 func (app *Config) HandleCreateGrayscale() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("output")
-		err := app.CreateGrayscale(filename)
+		var body RequestBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateGrayscale(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create grayscale: %v", err), http.StatusInternalServerError)
 			return
 		}
 
-		fmt.Fprintln(w, "Image created sucessfully, check storage folder for output image")
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
 	})
 }
 
 func (app *Config) HandleCreateBinary() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			Threshold string `json:"threshold"`
@@ -205,7 +203,7 @@ func (app *Config) HandleCreateBinary() http.Handler {
 // Basic Operations
 func (app *Config) HandleAddValue() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			Value string `json:"value"`
@@ -242,7 +240,7 @@ func (app *Config) HandleAddValue() http.Handler {
 
 func (app *Config) HandleSubtractValue() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			Value string `json:"value"`
@@ -274,7 +272,7 @@ func (app *Config) HandleSubtractValue() http.Handler {
 
 func (app *Config) HandleMultiplyValue() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			Value string `json:"value"`
@@ -306,7 +304,7 @@ func (app *Config) HandleMultiplyValue() http.Handler {
 
 func (app *Config) HandleDivideValue() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			Value string `json:"value"`
@@ -339,7 +337,7 @@ func (app *Config) HandleDivideValue() http.Handler {
 // Logical Operations
 func (app *Config) HandleNotOpertion() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 		err := app.NotOpertion(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to apply not operation: %v", err), http.StatusInternalServerError)
@@ -353,7 +351,7 @@ func (app *Config) HandleNotOpertion() http.Handler {
 // Basic Filters
 func (app *Config) HandleCreateNegativeFilter() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 		err := app.CreateNegative(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create negative filter: %v", err), http.StatusInternalServerError)
@@ -366,7 +364,7 @@ func (app *Config) HandleCreateNegativeFilter() http.Handler {
 
 func (app *Config) HandleCreateHisogramEqualization() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 		err := app.CreateHistogramEqualization(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create histogram equalization: %v", err), http.StatusInternalServerError)
@@ -380,7 +378,7 @@ func (app *Config) HandleCreateHisogramEqualization() http.Handler {
 // Spatial Domain Filters
 func (app *Config) HandleMeanFilter() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			Size string `json:"size"`
@@ -412,7 +410,7 @@ func (app *Config) HandleMeanFilter() http.Handler {
 
 func (app *Config) HandleMedianFilter() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			Size string `json:"size"`
@@ -444,7 +442,7 @@ func (app *Config) HandleMedianFilter() http.Handler {
 
 func (app *Config) HandleGaussianFilter() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			Size string `json:"size"`
@@ -477,7 +475,7 @@ func (app *Config) HandleGaussianFilter() http.Handler {
 // Morphological Operations
 func (app *Config) HandleDilation() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			KernelType string `json:"kernelType"`
@@ -516,7 +514,7 @@ func (app *Config) HandleDilation() http.Handler {
 
 func (app *Config) HandleErosion() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			KernelType string `json:"kernelType"`
@@ -555,7 +553,7 @@ func (app *Config) HandleErosion() http.Handler {
 
 func (app *Config) HandleOpening() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			KernelType string `json:"kernelType"`
@@ -594,7 +592,7 @@ func (app *Config) HandleOpening() http.Handler {
 
 func (app *Config) HandleClosing() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 
 		var data struct {
 			KernelType string `json:"kernelType"`
@@ -633,7 +631,7 @@ func (app *Config) HandleClosing() http.Handler {
 
 func (app *Config) HandleContour() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 		err := app.CreateContour(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create contour: %v", err), http.StatusInternalServerError)
@@ -647,7 +645,7 @@ func (app *Config) HandleContour() http.Handler {
 // Edge Detection
 func (app *Config) HandlePrewittEdgeDetection() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 		err := app.CreatePrewittEdgeDetection(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create prewitt edge detection: %v", err), http.StatusInternalServerError)
@@ -660,7 +658,7 @@ func (app *Config) HandlePrewittEdgeDetection() http.Handler {
 
 func (app *Config) HandleSobelEdgeDetection() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 		err := app.CreateSobelEdgeDetection(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create sobel edge detection: %v", err), http.StatusInternalServerError)
@@ -673,7 +671,7 @@ func (app *Config) HandleSobelEdgeDetection() http.Handler {
 
 func (app *Config) HandleLaplacianEdgeDetection() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 		err := app.CreateLaplacianEdgeDetection(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create sobel edge detection: %v", err), http.StatusInternalServerError)
@@ -689,7 +687,7 @@ func (app *Config) HandleLaplacianEdgeDetection() http.Handler {
 // Image Adjustments
 func (app *Config) HandleFlipLR() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 		err := app.CreateFlipLR(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to flip image: %v", err), http.StatusInternalServerError)
@@ -702,7 +700,7 @@ func (app *Config) HandleFlipLR() http.Handler {
 
 func (app *Config) HandleFlipUD() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 		err := app.CreateFlipUD(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to flip image: %v", err), http.StatusInternalServerError)
@@ -715,7 +713,7 @@ func (app *Config) HandleFlipUD() http.Handler {
 
 func (app *Config) HandleRotate90() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 		err := app.CreateRotate90(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to rotate image: %v", err), http.StatusInternalServerError)
@@ -728,7 +726,7 @@ func (app *Config) HandleRotate90() http.Handler {
 
 func (app *Config) HandleRotate270() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("image")
+		filename := r.FormValue("filename")
 		err := app.CreateRotate270(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to rotate image: %v", err), http.StatusInternalServerError)
