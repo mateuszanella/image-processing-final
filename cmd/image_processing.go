@@ -8,6 +8,9 @@ import (
 	"image/jpeg"
 	"image/png"
 	"os"
+
+	"golang.org/x/image/bmp"
+	"golang.org/x/image/tiff"
 )
 
 func (app *Config) openImage(filename string) (image.Image, string, error) {
@@ -45,6 +48,10 @@ func (app *Config) saveImage(img image.Image, format string) error {
 		err = png.Encode(out, img)
 	case "gif":
 		err = gif.Encode(out, img, nil)
+	case "bmp":
+		err = bmp.Encode(out, img)
+	case "tiff":
+		err = tiff.Encode(out, img, nil)
 	default:
 		err = fmt.Errorf("unsupported format: %s", format)
 	}
@@ -250,8 +257,10 @@ func (app *Config) CreateHistogramEqualization(filename string) error {
 	}
 
 	imgInfo := NewImageInfo(img)
+	grayscaleImage := imgInfo.NewGrayscale()
 
-	processedImg := imgInfo.NewHistogramEqualization()
+	grayscaleImageInfo := NewImageInfo(grayscaleImage)
+	processedImg := grayscaleImageInfo.NewHistogramEqualization()
 
 	err = app.saveImage(processedImg, format)
 	if err != nil {
