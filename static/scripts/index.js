@@ -115,7 +115,8 @@ async function applyAddAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
+            filename: 'uploaded.' + fileType,
             value: value 
         }) 
     });
@@ -129,7 +130,10 @@ async function applySubAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ value: value }) 
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            value: value 
+        }) 
     });
     refreshImage();
 }
@@ -141,7 +145,10 @@ async function applyMulAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ value: value }) 
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            value: value 
+        }) 
     });
     refreshImage();
 }
@@ -153,7 +160,10 @@ async function applyDivAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ value: value }) 
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            value: value 
+        }) 
     });
     refreshImage();
 }

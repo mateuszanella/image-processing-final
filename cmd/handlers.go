@@ -25,9 +25,18 @@ var kernelTypeMap = map[string]KernelType{
 	"diamond": Diamond,
 }
 
-type RequestBody struct {
+type BaseBody struct {
+	Filename string `json:"filename"`
+}
+
+type BinaryBody struct {
 	Filename  string `json:"filename"`
 	Threshold string `json:"threshold"`
+}
+
+type BasicOperationsBody struct {
+	Filename string `json:"filename"`
+	Value    string `json:"value"`
 }
 
 // Image updates
@@ -150,7 +159,7 @@ func (app *Config) HandleTestImageManipulation() http.Handler {
 // Basic
 func (app *Config) HandleCreateGrayscale() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var body RequestBody
+		var body BaseBody
 		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
@@ -171,7 +180,7 @@ func (app *Config) HandleCreateGrayscale() http.Handler {
 
 func (app *Config) HandleCreateBinary() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var body RequestBody
+		var body BinaryBody
 		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
@@ -202,11 +211,7 @@ func (app *Config) HandleCreateBinary() http.Handler {
 // Basic Operations
 func (app *Config) HandleAddValue() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			Value string `json:"value"`
-		}
+		var data BasicOperationsBody
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
@@ -214,6 +219,7 @@ func (app *Config) HandleAddValue() http.Handler {
 		}
 
 		value := 10
+		filename := ""
 		if data.Value != "" {
 			value, err = strconv.Atoi(data.Value)
 			if err != nil {
@@ -221,9 +227,17 @@ func (app *Config) HandleAddValue() http.Handler {
 				return
 			}
 		}
+		if data.Filename != "" {
+			filename = data.Filename
+		}
 
 		if value < 0 || value > 255 {
 			http.Error(w, "Value must be between 0 and 255", http.StatusBadRequest)
+			return
+		}
+
+		if filename == "" {
+			http.Error(w, "Filename not provided", http.StatusBadRequest)
 			return
 		}
 
@@ -239,24 +253,34 @@ func (app *Config) HandleAddValue() http.Handler {
 
 func (app *Config) HandleSubtractValue() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			Value string `json:"value"`
-		}
+		var data BasicOperationsBody
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
 			return
 		}
 
-		value := 128
+		value := 10
+		filename := ""
 		if data.Value != "" {
 			value, err = strconv.Atoi(data.Value)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse value: %v", err), http.StatusInternalServerError)
 				return
 			}
+		}
+		if data.Filename != "" {
+			filename = data.Filename
+		}
+
+		if value < 0 || value > 255 {
+			http.Error(w, "Value must be between 0 and 255", http.StatusBadRequest)
+			return
+		}
+
+		if filename == "" {
+			http.Error(w, "Filename not provided", http.StatusBadRequest)
+			return
 		}
 
 		err = app.SubtractPixels(filename, uint8(value))
@@ -271,24 +295,34 @@ func (app *Config) HandleSubtractValue() http.Handler {
 
 func (app *Config) HandleMultiplyValue() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			Value string `json:"value"`
-		}
+		var data BasicOperationsBody
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
 			return
 		}
 
-		value := 128
+		value := 10
+		filename := ""
 		if data.Value != "" {
 			value, err = strconv.Atoi(data.Value)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse value: %v", err), http.StatusInternalServerError)
 				return
 			}
+		}
+		if data.Filename != "" {
+			filename = data.Filename
+		}
+
+		if value < 0 || value > 255 {
+			http.Error(w, "Value must be between 0 and 255", http.StatusBadRequest)
+			return
+		}
+
+		if filename == "" {
+			http.Error(w, "Filename not provided", http.StatusBadRequest)
+			return
 		}
 
 		err = app.MultiplyPixels(filename, uint8(value))
@@ -303,24 +337,34 @@ func (app *Config) HandleMultiplyValue() http.Handler {
 
 func (app *Config) HandleDivideValue() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			Value string `json:"value"`
-		}
+		var data BasicOperationsBody
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
 			return
 		}
 
-		value := 128
+		value := 10
+		filename := ""
 		if data.Value != "" {
 			value, err = strconv.Atoi(data.Value)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse value: %v", err), http.StatusInternalServerError)
 				return
 			}
+		}
+		if data.Filename != "" {
+			filename = data.Filename
+		}
+
+		if value < 0 || value > 255 {
+			http.Error(w, "Value must be between 0 and 255", http.StatusBadRequest)
+			return
+		}
+
+		if filename == "" {
+			http.Error(w, "Filename not provided", http.StatusBadRequest)
+			return
 		}
 
 		err = app.DividePixels(filename, uint8(value))
