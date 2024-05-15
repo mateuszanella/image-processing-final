@@ -710,8 +710,16 @@ func (app *Config) HandleContour() http.Handler {
 // Edge Detection
 func (app *Config) HandlePrewittEdgeDetection() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-		err := app.CreatePrewittEdgeDetection(filename)
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreatePrewittEdgeDetection(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create prewitt edge detection: %v", err), http.StatusInternalServerError)
 			return
@@ -723,8 +731,16 @@ func (app *Config) HandlePrewittEdgeDetection() http.Handler {
 
 func (app *Config) HandleSobelEdgeDetection() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-		err := app.CreateSobelEdgeDetection(filename)
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateSobelEdgeDetection(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create sobel edge detection: %v", err), http.StatusInternalServerError)
 			return
@@ -736,8 +752,16 @@ func (app *Config) HandleSobelEdgeDetection() http.Handler {
 
 func (app *Config) HandleLaplacianEdgeDetection() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-		err := app.CreateLaplacianEdgeDetection(filename)
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateLaplacianEdgeDetection(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create sobel edge detection: %v", err), http.StatusInternalServerError)
 			return
@@ -752,8 +776,16 @@ func (app *Config) HandleLaplacianEdgeDetection() http.Handler {
 // Image Adjustments
 func (app *Config) HandleFlipLR() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-		err := app.CreateFlipLR(filename)
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateFlipLR(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to flip image: %v", err), http.StatusInternalServerError)
 			return
@@ -765,8 +797,16 @@ func (app *Config) HandleFlipLR() http.Handler {
 
 func (app *Config) HandleFlipUD() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-		err := app.CreateFlipUD(filename)
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateFlipUD(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to flip image: %v", err), http.StatusInternalServerError)
 			return
@@ -778,8 +818,16 @@ func (app *Config) HandleFlipUD() http.Handler {
 
 func (app *Config) HandleRotate90() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-		err := app.CreateRotate90(filename)
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateRotate90(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to rotate image: %v", err), http.StatusInternalServerError)
 			return
@@ -791,8 +839,16 @@ func (app *Config) HandleRotate90() http.Handler {
 
 func (app *Config) HandleRotate270() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-		err := app.CreateRotate270(filename)
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateRotate270(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to rotate image: %v", err), http.StatusInternalServerError)
 			return
