@@ -44,6 +44,12 @@ type SpatialDomainBody struct {
 	Size string `json:"size"`
 }
 
+type MorphologicalOpeationsBody struct {
+	BaseBody
+	KernelType string `json:"kernelType"`
+	Size       string `json:"size"`
+}
+
 // Image updates
 func (app *Config) HandleStaticFiles() http.Handler {
 	fs := http.FileServer(http.Dir("./static"))
@@ -538,27 +544,24 @@ func (app *Config) HandleGaussianFilter() http.Handler {
 // Morphological Operations
 func (app *Config) HandleDilation() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			KernelType string `json:"kernelType"`
-			Size       string `json:"size"`
-		}
-		err := json.NewDecoder(r.Body).Decode(&data)
+		var body MorphologicalOpeationsBody
+		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
 			return
 		}
 
-		kernelType, err := getKernelTypeFromString(data.KernelType)
+		filename := body.Filename
+
+		kernelType, err := getKernelTypeFromString(body.KernelType)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to parse kernel type: %v", err), http.StatusInternalServerError)
 			return
 		}
 
 		size := 3
-		if data.Size != "" {
-			size, err = strconv.Atoi(data.Size)
+		if body.Size != "" {
+			size, err = strconv.Atoi(body.Size)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
 				return
@@ -577,27 +580,24 @@ func (app *Config) HandleDilation() http.Handler {
 
 func (app *Config) HandleErosion() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			KernelType string `json:"kernelType"`
-			Size       string `json:"size"`
-		}
-		err := json.NewDecoder(r.Body).Decode(&data)
+		var body MorphologicalOpeationsBody
+		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
 			return
 		}
 
-		kernelType, err := getKernelTypeFromString(data.KernelType)
+		filename := body.Filename
+
+		kernelType, err := getKernelTypeFromString(body.KernelType)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to parse kernel type: %v", err), http.StatusInternalServerError)
 			return
 		}
 
 		size := 3
-		if data.Size != "" {
-			size, err = strconv.Atoi(data.Size)
+		if body.Size != "" {
+			size, err = strconv.Atoi(body.Size)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
 				return
@@ -616,27 +616,24 @@ func (app *Config) HandleErosion() http.Handler {
 
 func (app *Config) HandleOpening() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			KernelType string `json:"kernelType"`
-			Size       string `json:"size"`
-		}
-		err := json.NewDecoder(r.Body).Decode(&data)
+		var body MorphologicalOpeationsBody
+		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
 			return
 		}
 
-		kernelType, err := getKernelTypeFromString(data.KernelType)
+		filename := body.Filename
+
+		kernelType, err := getKernelTypeFromString(body.KernelType)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to parse kernel type: %v", err), http.StatusInternalServerError)
 			return
 		}
 
 		size := 3
-		if data.Size != "" {
-			size, err = strconv.Atoi(data.Size)
+		if body.Size != "" {
+			size, err = strconv.Atoi(body.Size)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
 				return
@@ -655,27 +652,24 @@ func (app *Config) HandleOpening() http.Handler {
 
 func (app *Config) HandleClosing() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-
-		var data struct {
-			KernelType string `json:"kernelType"`
-			Size       string `json:"size"`
-		}
-		err := json.NewDecoder(r.Body).Decode(&data)
+		var body MorphologicalOpeationsBody
+		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
 			return
 		}
 
-		kernelType, err := getKernelTypeFromString(data.KernelType)
+		filename := body.Filename
+
+		kernelType, err := getKernelTypeFromString(body.KernelType)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to parse kernel type: %v", err), http.StatusInternalServerError)
 			return
 		}
 
 		size := 3
-		if data.Size != "" {
-			size, err = strconv.Atoi(data.Size)
+		if body.Size != "" {
+			size, err = strconv.Atoi(body.Size)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
 				return
@@ -694,8 +688,16 @@ func (app *Config) HandleClosing() http.Handler {
 
 func (app *Config) HandleContour() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filename := r.FormValue("filename")
-		err := app.CreateContour(filename)
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateContour(filename)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to create contour: %v", err), http.StatusInternalServerError)
 			return

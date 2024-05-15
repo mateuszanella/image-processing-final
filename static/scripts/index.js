@@ -248,6 +248,7 @@ async function applyDilationAndRefresh() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
             size: size,
             kernelType: kernelType
         }) 
@@ -264,6 +265,7 @@ async function applyErosionAndRefresh() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
             size: size,
             kernelType: kernelType
         }) 
@@ -280,6 +282,7 @@ async function applyOpeningAndRefresh() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
             size: size,
             kernelType: kernelType
         }) 
@@ -296,6 +299,7 @@ async function applyClosingAndRefresh() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
             size: size,
             kernelType: kernelType
         }) 
