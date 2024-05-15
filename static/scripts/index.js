@@ -1,11 +1,17 @@
-// The whole application relies on this 
+/* 
+    The whole application relies on this 
+    Yes, the image uploading and refreshing is the most unsafe thing ever seen by humanity
+    But it works, and that's what matters, it's about the journey after all
+*/
 // *-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-*
 let file; // File object to be uploaded
+let fileType = 'jpeg'; // File type of the uploaded file
 
 async function refreshImage() {
     return new Promise((resolve, reject) => {
         var img = document.getElementById('image-display');
-        fetch('./api/image?' + new Date().getTime()) // Prevent caching
+        fetch('./api/image?filetype=' + fileType +
+            '&_=' + new Date().getTime()) // Prevent caching
             .then(response => response.blob())
             .then(blob => {
                 img.src = URL.createObjectURL(blob);

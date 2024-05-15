@@ -3,11 +3,18 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"image"
 	"image-processing/view/partials"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
+
+	_ "golang.org/x/image/bmp"
+	_ "golang.org/x/image/tiff"
 
 	"github.com/a-h/templ"
 )
@@ -16,6 +23,14 @@ var kernelTypeMap = map[string]KernelType{
 	"cross":   Cross,
 	"square":  Square,
 	"diamond": Diamond,
+}
+
+var formatMap = map[string]string{
+	"jpeg": "jpg",
+	"png":  "png",
+	"bmp":  "bmp",
+	"tiff": "tiff",
+	"gif":  "gif",
 }
 
 // Image updates
@@ -33,7 +48,17 @@ func (app *Config) HandleUploadImage() http.Handler {
 		}
 		defer file.Close()
 
-		out, err := os.Create("./storage/" + "uploaded.jpg")
+		_, format, err := image.Decode(file)
+		if err != nil {
+			http.Error(w, "Failed to decode image", http.StatusInternalServerError)
+			return
+		}
+
+		if val, ok := formatMap[format]; ok {
+			format = val
+		}
+
+		out, err := os.Create("./storage/uploaded." + format)
 		if err != nil {
 			http.Error(w, "Failed to open file", http.StatusInternalServerError)
 			return
@@ -52,7 +77,7 @@ func (app *Config) HandleUploadImage() http.Handler {
 			return
 		}
 
-		out2, err := os.Create("./storage/" + "output.jpg")
+		out2, err := os.Create("./storage/output." + format)
 		if err != nil {
 			http.Error(w, "Failed to open file", http.StatusInternalServerError)
 			return
@@ -71,7 +96,17 @@ func (app *Config) HandleUploadImage() http.Handler {
 
 func (app *Config) HandleGetImage() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filePath := "./storage/output.jpg"
+		filetype := r.URL.Query().Get("filetype")
+		if filetype == "" {
+			http.Error(w, "Filename not provided", http.StatusBadRequest)
+			return
+		}
+
+		if val, ok := formatMap[filetype]; ok {
+			filetype = val
+		}
+
+		filePath := "./storage/output." + filetype
 
 		_, err := os.Stat(filePath)
 		if os.IsNotExist(err) {

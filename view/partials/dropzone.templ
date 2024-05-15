@@ -22,7 +22,10 @@ templ Dropzone() {
 	<script>
         document.getElementById('dropzone-file').addEventListener('change', async function() {
             let label = document.querySelector('label[for="dropzone-file"]');
-            file = this.files[0];
+
+            file        = this.files[0];
+            fileType    = file.type.split('/')[1];
+
             if (file) {
                 label.classList.remove('border-dashed');
                 label.classList.add('border-solid', 'border-blue-500');
