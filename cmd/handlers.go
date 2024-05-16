@@ -6,6 +6,7 @@ import (
 	"image"
 	"image-processing/view/partials"
 	_ "image/gif"
+	"image/jpeg"
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
@@ -76,33 +77,67 @@ func (app *Config) HandleUploadImage() http.Handler {
 			http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
 			return
 		}
+
 		out, err := os.Create("./storage/uploaded." + format)
 		if err != nil {
 			http.Error(w, "Failed to open file", http.StatusInternalServerError)
 			return
 		}
 		defer out.Close()
+
 		_, err = io.Copy(out, file)
 		if err != nil {
 			http.Error(w, "Failed to save image", http.StatusInternalServerError)
 			return
 		}
 
-		_, err = file.Seek(0, 0)
-		if err != nil {
-			http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
-			return
-		}
-		out2, err := os.Create("./storage/output." + format)
-		if err != nil {
-			http.Error(w, "Failed to open file", http.StatusInternalServerError)
-			return
-		}
-		defer out2.Close()
-		_, err = io.Copy(out2, file)
-		if err != nil {
-			http.Error(w, "Failed to save image", http.StatusInternalServerError)
-			return
+		if format == "tiff" || format == "tif" {
+			_, err = file.Seek(0, 0)
+			if err != nil {
+				http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
+				return
+			}
+
+			img, _, err := image.Decode(file)
+			if err != nil {
+				http.Error(w, "Failed to decode image", http.StatusInternalServerError)
+				return
+			}
+
+			out2, err := os.Create("./storage/output.jpeg")
+			if err != nil {
+				http.Error(w, "Failed to open file", http.StatusInternalServerError)
+				return
+			}
+			defer out2.Close()
+
+			var opt jpeg.Options
+			opt.Quality = 100
+
+			err = jpeg.Encode(out2, img, &opt)
+			if err != nil {
+				http.Error(w, "Failed to encode image", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			out2, err := os.Create("./storage/output." + format)
+			if err != nil {
+				http.Error(w, "Failed to open file", http.StatusInternalServerError)
+				return
+			}
+			defer out2.Close()
+
+			_, err = file.Seek(0, 0)
+			if err != nil {
+				http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
+				return
+			}
+
+			_, err = io.Copy(out2, file)
+			if err != nil {
+				http.Error(w, "Failed to save image", http.StatusInternalServerError)
+				return
+			}
 		}
 
 		templ.Handler(partials.ImageDisplay()).ServeHTTP(w, r)

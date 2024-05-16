@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"image"
 	"image/color"
-	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"os"
 
 	"golang.org/x/image/bmp"
-	"golang.org/x/image/tiff"
 )
 
 func (app *Config) openImage(filename string) (image.Image, string, error) {
@@ -32,6 +30,10 @@ func (app *Config) openImage(filename string) (image.Image, string, error) {
 }
 
 func (app *Config) saveImage(img image.Image, format string) error {
+	if format == "tiff" || format == "tif" {
+		format = "jpeg"
+	}
+
 	out, err := os.Create("./storage/output." + format)
 	if err != nil {
 		fmt.Println("An error occurred while saving the image: ", err)
@@ -46,12 +48,8 @@ func (app *Config) saveImage(img image.Image, format string) error {
 		err = jpeg.Encode(out, img, &opt)
 	case "png":
 		err = png.Encode(out, img)
-	case "gif":
-		err = gif.Encode(out, img, nil)
 	case "bmp":
 		err = bmp.Encode(out, img)
-	case "tiff":
-		err = tiff.Encode(out, img, nil)
 	default:
 		err = fmt.Errorf("unsupported format: %s", format)
 	}

@@ -10,7 +10,11 @@ let fileType = 'jpeg'; // File type of the uploaded file
 async function refreshImage() {
     return new Promise((resolve, reject) => {
         var img = document.getElementById('image-display');
-        fetch('./api/image?filetype=' + fileType +
+
+        if (fileType === 'tiff' || fileType === 'tif') type = 'jpeg' 
+        else type = fileType;
+
+        fetch('./api/image?filetype=' + type +
             '&_=' + new Date().getTime()) // Prevent caching
             .then(response => response.blob())
             .then(blob => {
