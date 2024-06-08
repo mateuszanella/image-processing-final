@@ -1,39 +1,61 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/jpeg"
-	_ "image/jpeg"
+	"image/png"
 	"os"
+
+	"golang.org/x/image/bmp"
 )
 
-func (app *Config) openImage(filename string) (image.Image, error) {
-	file, err := os.Open("./storage/" + filename + ".jpg")
+func (app *Config) openImage(filename string) (image.Image, string, error) {
+	file, err := os.Open("./storage/" + filename)
 	if err != nil {
-		return nil, err
+		fmt.Println("An error occurred while opening the image: ", err)
+		return nil, "", err
 	}
 	defer file.Close()
 
-	img, _, err := image.Decode(file)
+	img, format, err := image.Decode(file)
+
 	if err != nil {
-		return nil, err
+		fmt.Println("An error occurred while decoding the image: ", err)
+		return nil, "", err
 	}
 
-	return img, nil
+	return img, format, nil
 }
 
-func (app *Config) saveImage(img image.Image, filename string) error {
-	out, err := os.Create("./storage/" + filename)
+func (app *Config) saveImage(img image.Image, format string) error {
+	if format == "tiff" || format == "tif" {
+		format = "jpeg"
+	}
+
+	out, err := os.Create("./storage/output." + format)
 	if err != nil {
+		fmt.Println("An error occurred while saving the image: ", err)
 		return err
 	}
 	defer out.Close()
 
-	var opt jpeg.Options
-	opt.Quality = 100
-	err = jpeg.Encode(out, img, &opt)
+	switch format {
+	case "jpeg":
+		var opt jpeg.Options
+		opt.Quality = 100
+		err = jpeg.Encode(out, img, &opt)
+	case "png":
+		err = png.Encode(out, img)
+	case "bmp":
+		err = bmp.Encode(out, img)
+	default:
+		err = fmt.Errorf("unsupported format: %s", format)
+	}
+
 	if err != nil {
+		fmt.Println("An error occurred while encoding the image: ", err)
 		return err
 	}
 
@@ -43,10 +65,10 @@ func (app *Config) saveImage(img image.Image, filename string) error {
 // Basic filters
 func (app *Config) CreateGrayscale(filename string) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -55,7 +77,7 @@ func (app *Config) CreateGrayscale(filename string) error {
 
 	grayImg := imgInfo.NewGrayscale()
 
-	err = app.saveImage(grayImg, "output.jpg")
+	err = app.saveImage(grayImg, format)
 	if err != nil {
 		return err
 	}
@@ -65,10 +87,10 @@ func (app *Config) CreateGrayscale(filename string) error {
 
 func (app *Config) CreateBinary(filename string, threshold uint8) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -77,7 +99,7 @@ func (app *Config) CreateBinary(filename string, threshold uint8) error {
 
 	binaryImg := imgInfo.NewBinary(threshold)
 
-	err = app.saveImage(binaryImg, "output.jpg")
+	err = app.saveImage(binaryImg, format)
 	if err != nil {
 		return err
 	}
@@ -88,10 +110,10 @@ func (app *Config) CreateBinary(filename string, threshold uint8) error {
 // Basic Operations
 func (app *Config) AddPixels(filename string, value uint8) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -100,7 +122,7 @@ func (app *Config) AddPixels(filename string, value uint8) error {
 
 	processedImg := imgInfo.AddValue(value)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -110,10 +132,10 @@ func (app *Config) AddPixels(filename string, value uint8) error {
 
 func (app *Config) SubtractPixels(filename string, value uint8) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -122,7 +144,7 @@ func (app *Config) SubtractPixels(filename string, value uint8) error {
 
 	processedImg := imgInfo.SubtractValue(value)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -132,10 +154,10 @@ func (app *Config) SubtractPixels(filename string, value uint8) error {
 
 func (app *Config) MultiplyPixels(filename string, value uint8) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -144,7 +166,7 @@ func (app *Config) MultiplyPixels(filename string, value uint8) error {
 
 	processedImg := imgInfo.MultiplyValue(value)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -154,10 +176,10 @@ func (app *Config) MultiplyPixels(filename string, value uint8) error {
 
 func (app *Config) DividePixels(filename string, value uint8) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -166,7 +188,7 @@ func (app *Config) DividePixels(filename string, value uint8) error {
 
 	processedImg := imgInfo.DivideValue(value)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -177,10 +199,10 @@ func (app *Config) DividePixels(filename string, value uint8) error {
 // Logical Operations
 func (app *Config) NotOpertion(filename string) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -191,7 +213,7 @@ func (app *Config) NotOpertion(filename string) error {
 	binaryImgInfo := NewImageInfo(binaryImg)
 	processedImg := imgInfo.NewNot(binaryImgInfo)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -202,10 +224,10 @@ func (app *Config) NotOpertion(filename string) error {
 // Filters
 func (app *Config) CreateNegative(filename string) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -214,7 +236,7 @@ func (app *Config) CreateNegative(filename string) error {
 
 	negativeImg := imgInfo.NewNegative(imgInfo)
 
-	err = app.saveImage(negativeImg, "output.jpg")
+	err = app.saveImage(negativeImg, format)
 	if err != nil {
 		return err
 	}
@@ -224,19 +246,21 @@ func (app *Config) CreateNegative(filename string) error {
 
 func (app *Config) CreateHistogramEqualization(filename string) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
 
 	imgInfo := NewImageInfo(img)
+	grayscaleImage := imgInfo.NewGrayscale()
 
-	processedImg := imgInfo.NewHistogramEqualization()
+	grayscaleImageInfo := NewImageInfo(grayscaleImage)
+	processedImg := grayscaleImageInfo.NewHistogramEqualization()
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -247,10 +271,10 @@ func (app *Config) CreateHistogramEqualization(filename string) error {
 // Spatial Domain Filters
 func (app *Config) CreateMeanFilter(filename string, size int) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -259,7 +283,7 @@ func (app *Config) CreateMeanFilter(filename string, size int) error {
 
 	processedImg := imgInfo.NewMeanFilter(size)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -269,10 +293,10 @@ func (app *Config) CreateMeanFilter(filename string, size int) error {
 
 func (app *Config) CreateMedianFilter(filename string, size int) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -281,7 +305,7 @@ func (app *Config) CreateMedianFilter(filename string, size int) error {
 
 	processedImg := imgInfo.NewMedianFilter(size)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -291,10 +315,10 @@ func (app *Config) CreateMedianFilter(filename string, size int) error {
 
 func (app *Config) CreateGaussianFilter(filename string, size int) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -303,7 +327,7 @@ func (app *Config) CreateGaussianFilter(filename string, size int) error {
 
 	processedImg := imgInfo.NewGaussianFilter(size)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -314,10 +338,10 @@ func (app *Config) CreateGaussianFilter(filename string, size int) error {
 // Morphological Operations
 func (app *Config) CreateDilation(filename string, size int, kernelType KernelType) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -328,7 +352,7 @@ func (app *Config) CreateDilation(filename string, size int, kernelType KernelTy
 	binaryImgInfo := NewImageInfo(binaryImg)
 	processedImg := binaryImgInfo.NewDilation(size, kernelType)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -338,10 +362,10 @@ func (app *Config) CreateDilation(filename string, size int, kernelType KernelTy
 
 func (app *Config) CreateErosion(filename string, size int, kernelType KernelType) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -352,7 +376,7 @@ func (app *Config) CreateErosion(filename string, size int, kernelType KernelTyp
 	binaryImgInfo := NewImageInfo(binaryImg)
 	processedImg := binaryImgInfo.NewErosion(size, kernelType)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -362,10 +386,10 @@ func (app *Config) CreateErosion(filename string, size int, kernelType KernelTyp
 
 func (app *Config) CreateOpening(filename string, size int, kernelType KernelType) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -379,7 +403,7 @@ func (app *Config) CreateOpening(filename string, size int, kernelType KernelTyp
 	erosionImgInfo := NewImageInfo(erosionImg)
 	processedImg := erosionImgInfo.NewDilation(size, kernelType)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -389,10 +413,10 @@ func (app *Config) CreateOpening(filename string, size int, kernelType KernelTyp
 
 func (app *Config) CreateClosing(filename string, size int, kernelType KernelType) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -406,7 +430,7 @@ func (app *Config) CreateClosing(filename string, size int, kernelType KernelTyp
 	dilationImgInfo := NewImageInfo(dilationImg)
 	processedImg := dilationImgInfo.NewErosion(size, kernelType)
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -416,10 +440,10 @@ func (app *Config) CreateClosing(filename string, size int, kernelType KernelTyp
 
 func (app *Config) CreateContour(filename string) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -430,7 +454,7 @@ func (app *Config) CreateContour(filename string) error {
 	binaryImgInfo := NewImageInfo(binaryImg)
 	processedImg := binaryImgInfo.NewContour()
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -441,10 +465,10 @@ func (app *Config) CreateContour(filename string) error {
 // Edge Detection
 func (app *Config) CreatePrewittEdgeDetection(filename string) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -453,7 +477,7 @@ func (app *Config) CreatePrewittEdgeDetection(filename string) error {
 
 	processedImg := imgInfo.NewPrewittFilter()
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -463,10 +487,10 @@ func (app *Config) CreatePrewittEdgeDetection(filename string) error {
 
 func (app *Config) CreateSobelEdgeDetection(filename string) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -475,7 +499,7 @@ func (app *Config) CreateSobelEdgeDetection(filename string) error {
 
 	processedImg := imgInfo.NewSobelFilter()
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}
@@ -485,10 +509,10 @@ func (app *Config) CreateSobelEdgeDetection(filename string) error {
 
 func (app *Config) CreateLaplacianEdgeDetection(filename string) error {
 	if filename == "" {
-		filename = "uploaded"
+		filename = "uploaded.jpg"
 	}
 
-	img, err := app.openImage(filename)
+	img, format, err := app.openImage(filename)
 	if err != nil {
 		return err
 	}
@@ -497,7 +521,90 @@ func (app *Config) CreateLaplacianEdgeDetection(filename string) error {
 
 	processedImg := imgInfo.NewLaplacianFilter()
 
-	err = app.saveImage(processedImg, "output.jpg")
+	err = app.saveImage(processedImg, format)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// *-**-* Bonus *-**-*
+
+// Image Adjustments
+func (app *Config) CreateFlipLR(filename string) error {
+	if filename == "" {
+		filename = "uploaded.jpg"
+	}
+
+	img, format, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	processedImg := NewImageInfo(img).FlipLR()
+
+	err = app.saveImage(processedImg, format)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateFlipUD(filename string) error {
+	if filename == "" {
+		filename = "uploaded.jpg"
+	}
+
+	img, format, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	processedImg := NewImageInfo(img).FlipUD()
+
+	err = app.saveImage(processedImg, format)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateRotate90(filename string) error {
+	if filename == "" {
+		filename = "uploaded.jpg"
+	}
+
+	img, format, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	processedImg := NewImageInfo(img).Rotate90()
+
+	err = app.saveImage(processedImg, format)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateRotate270(filename string) error {
+	if filename == "" {
+		filename = "uploaded.jpg"
+	}
+
+	img, format, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	processedImg := NewImageInfo(img).Rotate270()
+
+	err = app.saveImage(processedImg, format)
 	if err != nil {
 		return err
 	}

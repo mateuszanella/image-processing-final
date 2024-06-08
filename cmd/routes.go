@@ -47,6 +47,11 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/sobel", app.HandleSobelEdgeDetection())
 	mux.Handle("POST /api/laplacian", app.HandleLaplacianEdgeDetection())
 
+	mux.Handle("POST /api/flip-lr", app.HandleFlipLR())
+	mux.Handle("POST /api/flip-ud", app.HandleFlipUD())
+	mux.Handle("POST /api/rotate-90", app.HandleRotate90())
+	mux.Handle("POST /api/rotate-270", app.HandleRotate270())
+
 	// templ routes
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))
@@ -55,6 +60,7 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("GET /image", app.HandleDisplayComponent())
 	mux.Handle("GET /component/dropzone", app.HandleDropzoneComponent())
 	mux.Handle("GET /component/filters", app.HandleFiltersComponent())
+	mux.Handle("GET /component/adjustments", app.HandleAdjustmentsComponent())
 
 	return mux
 }

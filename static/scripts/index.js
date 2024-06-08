@@ -1,11 +1,21 @@
-// The whole application relies on this 
+/* 
+    The whole application relies on this 
+    Yes, the image uploading and refreshing is the most unsafe thing ever seen by humanity
+    But it works, and that's what matters, it's about the journey after all
+*/
 // *-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-*
 let file; // File object to be uploaded
+let fileType = 'jpeg'; // File type of the uploaded file
 
 async function refreshImage() {
     return new Promise((resolve, reject) => {
         var img = document.getElementById('image-display');
-        fetch('./api/image?' + new Date().getTime()) // Prevent caching
+
+        if (fileType === 'tiff' || fileType === 'tif') type = 'jpeg' 
+        else type = fileType;
+
+        fetch('./api/image?filetype=' + type +
+            '&_=' + new Date().getTime()) // Prevent caching
             .then(response => response.blob())
             .then(blob => {
                 img.src = URL.createObjectURL(blob);
@@ -66,7 +76,13 @@ async function resetDropzone() {
 
 // Filters
 async function applyGrayscaleAndRefresh() {
-    await fetch('/api/grayscale', { method: 'POST' });
+    await fetch('/api/grayscale', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
     refreshImage();
 }
 
@@ -77,18 +93,33 @@ async function applyBinaryAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ threshold: threshold }) 
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            threshold: threshold 
+        }) 
     });
     refreshImage();
 }
 
 async function applyHistogramEqualizationAndRefresh() {
-    await fetch('/api/histogram-equalization', { method: 'POST' });
+    await fetch('/api/histogram-equalization', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
     refreshImage();
 }
 
 async function applyNegativeAndRefresh() {
-    await fetch('/api/negative', { method: 'POST' });
+    await fetch('/api/negative', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
     refreshImage();
 }
 
@@ -100,7 +131,8 @@ async function applyAddAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
+            filename: 'uploaded.' + fileType,
             value: value 
         }) 
     });
@@ -114,7 +146,10 @@ async function applySubAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ value: value }) 
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            value: value 
+        }) 
     });
     refreshImage();
 }
@@ -126,7 +161,10 @@ async function applyMulAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ value: value }) 
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            value: value 
+        }) 
     });
     refreshImage();
 }
@@ -138,14 +176,23 @@ async function applyDivAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ value: value }) 
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            value: value 
+        }) 
     });
     refreshImage();
 }
 
 // Logic operations
 async function applyNOTAndRefresh() {
-    await fetch('/api/not', { method: 'POST' });
+    await fetch('/api/not', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
     refreshImage();
 }
 
@@ -157,7 +204,10 @@ async function applyMeanFilterAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ size: size }) 
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            size: size 
+        }) 
     });
     refreshImage();
 }
@@ -169,7 +219,10 @@ async function applyMedianFilterAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ size: size }) 
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            size: size 
+        }) 
     });
     refreshImage();
 }
@@ -181,7 +234,10 @@ async function applyGaussianFilterAndRefresh() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ size: size }) 
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            size: size 
+        }) 
     });
     refreshImage();
 }
@@ -196,6 +252,7 @@ async function applyDilationAndRefresh() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
             size: size,
             kernelType: kernelType
         }) 
@@ -212,6 +269,7 @@ async function applyErosionAndRefresh() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
             size: size,
             kernelType: kernelType
         }) 
@@ -228,6 +286,7 @@ async function applyOpeningAndRefresh() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
             size: size,
             kernelType: kernelType
         }) 
@@ -244,6 +303,7 @@ async function applyClosingAndRefresh() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
             size: size,
             kernelType: kernelType
         }) 
@@ -252,22 +312,93 @@ async function applyClosingAndRefresh() {
 }
 
 async function applyContourAndRefresh() {
-    await fetch('/api/contour', { method: 'POST' });
+    await fetch('/api/contour', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
     refreshImage();
 }
 
 //Edge detection
 async function applyPrewittEdgeDetectionAndRefresh() {
-    await fetch('/api/prewitt', { method: 'POST' });
+    await fetch('/api/prewitt', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
     refreshImage();
 }
 
 async function applySobelEdgeDetectionAndRefresh() {
-    await fetch('/api/sobel', { method: 'POST' });
+    await fetch('/api/sobel', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
     refreshImage();
 }
 
 async function applyLaplacianEdgeDetectionAndRefresh() {
-    await fetch('/api/laplacian', { method: 'POST' });
+    await fetch('/api/laplacian', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
+    refreshImage();
+}
+
+// *-**-* Bonus *-**-*
+
+// Image Adjustments
+async function flipLRAndRefresh() {
+    await fetch('/api/flip-lr', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
+    refreshImage();
+}
+
+async function flipUDAndRefresh() {
+    await fetch('/api/flip-ud', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
+    refreshImage();
+}
+
+async function rotate90AndRefresh() {
+    await fetch('/api/rotate-90', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
+    refreshImage();
+}
+
+async function rotate270AndRefresh() {
+    await fetch('/api/rotate-270', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
     refreshImage();
 }

@@ -532,6 +532,61 @@ func (imgInfo *ImageInfo) NewLaplacianFilter() *image.Gray {
 	return img
 }
 
+// *-**-* Bonus *-**-*
+
+// Image Adjustments
+func (imgInfo *ImageInfo) FlipLR() *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+	originalImage := imgInfo.GenerateImage()
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			img.Set(imgInfo.Width-1-x, y, originalImage.At(x, y))
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) FlipUD() *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+	originalImage := imgInfo.GenerateImage()
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			img.Set(x, imgInfo.Height-1-y, originalImage.At(x, y))
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) Rotate90() *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Height, imgInfo.Width))
+	originalImage := imgInfo.GenerateImage()
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			img.Set(imgInfo.Height-1-y, x, originalImage.At(x, y))
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) Rotate270() *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Height, imgInfo.Width))
+	originalImage := imgInfo.GenerateImage()
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			img.Set(imgInfo.Height-1-y, imgInfo.Width-x, originalImage.At(x, y))
+		}
+	}
+
+	return img
+}
+
 // Helper functions
 func subtractWithLimit(value uint32, limit uint8) uint32 {
 	if value < uint32(limit) {
