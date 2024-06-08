@@ -36,6 +36,9 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/mean-sdf", app.HandleMeanFilter())
 	mux.Handle("POST /api/median-sdf", app.HandleMedianFilter())
 	mux.Handle("POST /api/gaussian-sdf", app.HandleGaussianFilter())
+	mux.Handle("POST /api/min-sdf", app.HandleMinimumFilter())
+	mux.Handle("POST /api/max-sdf", app.HandleMaximumFilter())
+	mux.Handle("POST /api/order-sdf", app.HandleOrderFilter())
 
 	mux.Handle("POST /api/dilation", app.HandleDilation())
 	mux.Handle("POST /api/erosion", app.HandleErosion())
@@ -56,7 +59,6 @@ func (app *Config) routes() http.Handler {
 	c := layout.Base(view.Index())
 	mux.Handle("/", templ.Handler(c))
 	mux.Handle("/blank", templ.Handler(partials.Blank()))
-	mux.Handle("/foo", templ.Handler(partials.Foo()))
 	mux.Handle("GET /image", app.HandleDisplayComponent())
 	mux.Handle("GET /component/dropzone", app.HandleDropzoneComponent())
 	mux.Handle("GET /component/filters", app.HandleFiltersComponent())

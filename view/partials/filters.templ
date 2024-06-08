@@ -3,7 +3,7 @@ package partials
 import "image-processing/view/partials/basic_operations"
 import "image-processing/view/partials/filters"
 import "image-processing/view/partials/logic_operations"
-import "image-processing/view/partials/spacial_domain_filters"
+import "image-processing/view/partials/spatial_domain_filters"
 import "image-processing/view/partials/morphological_operations"
 import "image-processing/view/partials/edge_detection"
 
@@ -31,10 +31,13 @@ templ Filters() {
 
             @Divider()
 
-            @spacial_domain_filters.MeanFilterButton()
-            @spacial_domain_filters.MedianFilterButton()
-            @spacial_domain_filters.GaussianFilterButton()
+            @spatial_domain_filters.MeanFilterButton()
+            @spatial_domain_filters.MedianFilterButton()
+            @spatial_domain_filters.GaussianFilterButton()
             <p class="text-xs italic text-gray-500 dark:text-gray-400" >*Large images might take a while to process</p>
+            @spatial_domain_filters.MinimumFilterButton()
+            @spatial_domain_filters.MaximumFilterButton()
+            @spatial_domain_filters.OrderFilterButton()
 
             @Divider()
 

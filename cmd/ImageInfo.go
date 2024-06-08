@@ -314,6 +314,90 @@ func (imgInfo *ImageInfo) NewGaussianFilter(size int) *image.RGBA {
 	return img
 }
 
+func (imgInfo *ImageInfo) NewMinFilter(size int) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := uint32(255)
+			g := uint32(255)
+			b := uint32(255)
+
+			for i := -size / 2; i <= size/2; i++ {
+				for j := -size / 2; j <= size/2; j++ {
+					if y+i < 0 || y+i >= imgInfo.Height || x+j < 0 || x+j >= imgInfo.Width {
+						continue
+					}
+
+					r = min(r, imgInfo.Pixels[y+i][x+j].R>>8)
+					g = min(g, imgInfo.Pixels[y+i][x+j].G>>8)
+					b = min(b, imgInfo.Pixels[y+i][x+j].B>>8)
+				}
+			}
+
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) NewMaxFilter(size int) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := uint32(0)
+			g := uint32(0)
+			b := uint32(0)
+
+			for i := -size / 2; i <= size/2; i++ {
+				for j := -size / 2; j <= size/2; j++ {
+					if y+i < 0 || y+i >= imgInfo.Height || x+j < 0 || x+j >= imgInfo.Width {
+						continue
+					}
+
+					r = max(r, imgInfo.Pixels[y+i][x+j].R)
+					g = max(g, imgInfo.Pixels[y+i][x+j].G)
+					b = max(b, imgInfo.Pixels[y+i][x+j].B)
+				}
+			}
+
+			img.Set(x, y, color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), 255})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) NewOrderFilter(position int) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 1; y < imgInfo.Height-1; y++ {
+		for x := 1; x < imgInfo.Width-1; x++ {
+			r := make([]uint32, 0)
+			g := make([]uint32, 0)
+			b := make([]uint32, 0)
+
+			for i := -1; i <= 1; i++ {
+				for j := -1; j <= 1; j++ {
+					r = append(r, imgInfo.Pixels[y+i][x+j].R)
+					g = append(g, imgInfo.Pixels[y+i][x+j].G)
+					b = append(b, imgInfo.Pixels[y+i][x+j].B)
+				}
+			}
+
+			sort.Slice(r, func(i, j int) bool { return r[i] < r[j] })
+			sort.Slice(g, func(i, j int) bool { return g[i] < g[j] })
+			sort.Slice(b, func(i, j int) bool { return b[i] < b[j] })
+
+			img.Set(x, y, color.RGBA{uint8(r[position] >> 8), uint8(g[position] >> 8), uint8(b[position] >> 8), 255})
+		}
+	}
+
+	return img
+}
+
 // Morphological Operations
 func (imgInfo *ImageInfo) NewDilation(size int, kernelType KernelType) *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))

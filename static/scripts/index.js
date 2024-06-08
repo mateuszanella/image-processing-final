@@ -242,6 +242,51 @@ async function applyGaussianFilterAndRefresh() {
     refreshImage();
 }
 
+async function applyMinimumFilterAndRefresh() {
+    var size = document.getElementById("minimum-filter-size").value;
+    await fetch('/api/min-sdf', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            size: size 
+        }) 
+    });
+    refreshImage();
+}
+
+async function applyMaximumFilterAndRefresh() {
+    var size = document.getElementById("maximum-filter-size").value;
+    await fetch('/api/max-sdf', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            filename: 'uploaded.' + fileType,
+            size: size 
+        }) 
+    });
+    refreshImage();
+}
+
+async function applyOrderFilterAndRefresh() {
+    var position = document.getElementById("order-sdf-value").value;
+    await fetch('/api/order-sdf', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            filename: 'uploaded.' + fileType,
+            position: position
+        }) 
+    });
+    refreshImage();
+}
+
 // Morphological operations
 async function applyDilationAndRefresh() {
     var size = document.getElementById("dilation-matrix-size").value;
