@@ -667,6 +667,27 @@ func (app *Config) HandleOrderFilter() http.Handler {
 	})
 }
 
+func (app *Config) HandleConservativeSmoothingFilter() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateConservativeSmoothingFilter(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply conservative smoothing filter: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
 // Morphological Operations
 func (app *Config) HandleDilation() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

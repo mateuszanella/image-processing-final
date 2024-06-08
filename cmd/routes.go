@@ -39,6 +39,7 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/min-sdf", app.HandleMinimumFilter())
 	mux.Handle("POST /api/max-sdf", app.HandleMaximumFilter())
 	mux.Handle("POST /api/order-sdf", app.HandleOrderFilter())
+	mux.Handle("POST /api/conservative-smoothing-sdf", app.HandleConservativeSmoothingFilter())
 
 	mux.Handle("POST /api/dilation", app.HandleDilation())
 	mux.Handle("POST /api/erosion", app.HandleErosion())

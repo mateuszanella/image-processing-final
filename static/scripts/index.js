@@ -287,6 +287,17 @@ async function applyOrderFilterAndRefresh() {
     refreshImage();
 }
 
+async function applyConservativeSmoothingAndRefresh() {
+    await fetch('/api/conservative-smoothing-sdf', { 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ filename: 'uploaded.' + fileType }) 
+    });
+    refreshImage();
+}
+
 // Morphological operations
 async function applyDilationAndRefresh() {
     var size = document.getElementById("dilation-matrix-size").value;

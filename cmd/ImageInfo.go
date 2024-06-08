@@ -398,6 +398,70 @@ func (imgInfo *ImageInfo) NewOrderFilter(position int) *image.RGBA {
 	return img
 }
 
+func (imgInfo *ImageInfo) NewConservativeSmoothingFilter() *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 1; y < imgInfo.Height-1; y++ {
+		for x := 1; x < imgInfo.Width-1; x++ {
+			minR, maxR := uint32(255), uint32(0)
+			minG, maxG := uint32(255), uint32(0)
+			minB, maxB := uint32(255), uint32(0)
+
+			for i := -1; i <= 1; i++ {
+				for j := -1; j <= 1; j++ {
+					neighborPixel := imgInfo.Pixels[y+i][x+j]
+
+					if neighborPixel.R < minR {
+						minR = neighborPixel.R
+					}
+					if neighborPixel.R > maxR {
+						maxR = neighborPixel.R
+					}
+					if neighborPixel.G < minG {
+						minG = neighborPixel.G
+					}
+					if neighborPixel.G > maxG {
+						maxG = neighborPixel.G
+					}
+					if neighborPixel.B < minB {
+						minB = neighborPixel.B
+					}
+					if neighborPixel.B > maxB {
+						maxB = neighborPixel.B
+					}
+				}
+			}
+
+			originalPixel := imgInfo.Pixels[y][x]
+
+			if originalPixel.R < minR {
+				originalPixel.R = minR
+			} else if originalPixel.R > maxR {
+				originalPixel.R = maxR
+			}
+			if originalPixel.G < minG {
+				originalPixel.G = minG
+			} else if originalPixel.G > maxG {
+				originalPixel.G = maxG
+			}
+			if originalPixel.B < minB {
+				originalPixel.B = minB
+			} else if originalPixel.B > maxB {
+				originalPixel.B = maxB
+			}
+
+			img.Set(x, y, color.RGBA{
+				uint8(originalPixel.R >> 8),
+				uint8(originalPixel.G >> 8),
+				uint8(originalPixel.B >> 8),
+				255,
+			})
+		}
+	}
+
+	return img
+}
+
 // Morphological Operations
 func (imgInfo *ImageInfo) NewDilation(size int, kernelType KernelType) *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
