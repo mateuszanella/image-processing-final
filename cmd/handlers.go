@@ -45,6 +45,11 @@ type SpatialDomainBody struct {
 	Size string `json:"size"`
 }
 
+type OrderSpatialDomainBody struct {
+	BaseBody
+	Position string `json:"position"`
+}
+
 type MorphologicalOpeationsBody struct {
 	BaseBody
 	KernelType string `json:"kernelType"`
@@ -569,6 +574,113 @@ func (app *Config) HandleGaussianFilter() http.Handler {
 		err = app.CreateGaussianFilter(filename, size)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to apply gaussian filter: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleMinimumFilter() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var body SpatialDomainBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+		filename := body.Filename
+		size := 3
+		if body.Size != "" {
+			size, err = strconv.Atoi(body.Size)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+		err = app.CreateMinimumFilter(filename, size)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply minimum filter: %v", err), http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleMaximumFilter() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var body SpatialDomainBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to decode request body: %v", err), http.StatusBadRequest)
+			return
+		}
+		filename := body.Filename
+		size := 3
+		if body.Size != "" {
+			size, err = strconv.Atoi(body.Size)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse size: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
+		err = app.CreateMaximumFilter(filename, size)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply maximum filter: %v", err), http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleOrderFilter() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var body OrderSpatialDomainBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		filename := body.Filename
+		position := 0
+		if body.Position != "" {
+			position, err = strconv.Atoi(body.Position)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Failed to parse position: %v", err), http.StatusInternalServerError)
+				return
+			}
+
+			if position < 0 || position > 8 {
+				http.Error(w, "Position must be between 0 and 8", http.StatusBadRequest)
+				return
+			}
+		}
+
+		err = app.CreateOrderFilter(filename, position)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply order filter: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleConservativeSmoothingFilter() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var body BaseBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		filename := body.Filename
+
+		err = app.CreateConservativeSmoothingFilter(filename)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply conservative smoothing filter: %v", err), http.StatusInternalServerError)
 			return
 		}
 

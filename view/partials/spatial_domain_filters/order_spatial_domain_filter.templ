@@ -1,0 +1,10 @@
+package spatial_domain_filters
+
+templ OrderFilterButton() {
+    <div class="flex flex-column">
+        <input id="order-sdf-value" type="number" min="0" max="8" value="4" class="w-full mr-2 border border-input bg-background h-9 rounded-md px-3"></input>
+        <button class="w-full inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 hover:bg-gray-200" onclick="applyOrderFilterAndRefresh()">
+            Apply Order Filter
+        </button>
+    </div>
+}

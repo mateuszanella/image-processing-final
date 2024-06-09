@@ -335,6 +335,93 @@ func (app *Config) CreateGaussianFilter(filename string, size int) error {
 	return nil
 }
 
+func (app *Config) CreateMinimumFilter(filename string, size int) error {
+	if filename == "" {
+		filename = "uploaded.jpg"
+	}
+
+	img, format, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.NewMinFilter(size)
+
+	err = app.saveImage(processedImg, format)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateMaximumFilter(filename string, size int) error {
+	if filename == "" {
+		filename = "uploaded.jpg"
+	}
+
+	img, format, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.NewMaxFilter(size)
+
+	err = app.saveImage(processedImg, format)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateOrderFilter(filename string, position int) error {
+	if filename == "" {
+		filename = "uploaded.jpg"
+	}
+
+	img, format, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.NewOrderFilter(position)
+
+	err = app.saveImage(processedImg, format)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateConservativeSmoothingFilter(filename string) error {
+	if filename == "" {
+		filename = "uploaded.jpg"
+	}
+
+	img, format, err := app.openImage(filename)
+	if err != nil {
+		return err
+	}
+	imgInfo := NewImageInfo(img)
+
+	processedImg := imgInfo.NewConservativeSmoothingFilter()
+
+	err = app.saveImage(processedImg, format)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Morphological Operations
 func (app *Config) CreateDilation(filename string, size int, kernelType KernelType) error {
 	if filename == "" {
