@@ -1041,3 +1041,9 @@ func (app *Config) HandleAdjustmentsComponent() http.Handler {
 		templ.Handler(partials.Adjustments()).ServeHTTP(w, r)
 	})
 }
+
+func (app *Config) HandleAddImagesComponent() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(partials.AddImagesForm()).ServeHTTP(w, r)
+	})
+}

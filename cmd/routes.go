@@ -56,14 +56,17 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/rotate-90", app.HandleRotate90())
 	mux.Handle("POST /api/rotate-270", app.HandleRotate270())
 
+	mux.Handle(("POST /api/combination/add"), app.HandleAddImages())
+
 	// templ routes
-	c := layout.Base(view.Index())
-	mux.Handle("/", templ.Handler(c))
+	mux.Handle("/", templ.Handler(layout.Base(view.Index())))
+	mux.Handle("/combination", templ.Handler(layout.Base(view.CombinationPage())))
 	mux.Handle("/blank", templ.Handler(partials.Blank()))
 	mux.Handle("GET /image", app.HandleDisplayComponent())
 	mux.Handle("GET /component/dropzone", app.HandleDropzoneComponent())
 	mux.Handle("GET /component/filters", app.HandleFiltersComponent())
 	mux.Handle("GET /component/adjustments", app.HandleAdjustmentsComponent())
+	mux.Handle("GET /component/combination/add", app.HandleAddImagesComponent())
 
 	return mux
 }
