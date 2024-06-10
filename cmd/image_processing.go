@@ -242,6 +242,93 @@ func (app *Config) NotOpertion(filename string) error {
 	return nil
 }
 
+func (app *Config) AndOperation(image1, image2 string) error {
+	img1, _, err := app.openImage(image1)
+	if err != nil {
+		return err
+	}
+
+	img2, _, err := app.openImage(image2)
+	if err != nil {
+		return err
+	}
+
+	imgInfo1 := NewImageInfo(img1)
+	binaryImg1 := imgInfo1.NewBinary(128)
+	binaryImg1Info := NewImageInfo(binaryImg1)
+
+	imgInfo2 := NewImageInfo(img2)
+	binaryImg2 := imgInfo2.NewBinary(128)
+	binaryImg2Info := NewImageInfo(binaryImg2)
+
+	processedImg := binaryImg1Info.NewAnd(binaryImg2Info)
+
+	err = app.saveOperationImage(processedImg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) OrOperation(image1, image2 string) error {
+	img1, _, err := app.openImage(image1)
+	if err != nil {
+		return err
+	}
+
+	img2, _, err := app.openImage(image2)
+	if err != nil {
+		return err
+	}
+
+	imgInfo1 := NewImageInfo(img1)
+	binaryImg1 := imgInfo1.NewBinary(128)
+	binaryImg1Info := NewImageInfo(binaryImg1)
+
+	imgInfo2 := NewImageInfo(img2)
+	binaryImg2 := imgInfo2.NewBinary(128)
+	binaryImg2Info := NewImageInfo(binaryImg2)
+
+	processedImg := binaryImg1Info.NewOr(binaryImg2Info)
+
+	err = app.saveOperationImage(processedImg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) XorOperation(image1, image2 string) error {
+	img1, _, err := app.openImage(image1)
+	if err != nil {
+		return err
+	}
+
+	img2, _, err := app.openImage(image2)
+	if err != nil {
+		return err
+	}
+
+	imgInfo1 := NewImageInfo(img1)
+	binaryImg1 := imgInfo1.NewBinary(128)
+	binaryImg1Info := NewImageInfo(binaryImg1)
+
+	imgInfo2 := NewImageInfo(img2)
+	binaryImg2 := imgInfo2.NewBinary(128)
+	binaryImg2Info := NewImageInfo(binaryImg2)
+
+	processedImg := binaryImg1Info.NewXor(binaryImg2Info)
+
+	err = app.saveOperationImage(processedImg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Filters
 func (app *Config) CreateNegative(filename string) error {
 	if filename == "" {
@@ -654,6 +741,30 @@ func (app *Config) CreateImageAddition(image1, image2 string) error {
 	imgInfo2 := NewImageInfo(img2)
 
 	processedImg := imgInfo1.AddImages(imgInfo2)
+
+	err = app.saveOperationImage(processedImg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (app *Config) CreateImageSubtraction(image1, image2 string) error {
+	img1, _, err := app.openImage(image1)
+	if err != nil {
+		return err
+	}
+
+	img2, _, err := app.openImage(image2)
+	if err != nil {
+		return err
+	}
+
+	imgInfo1 := NewImageInfo(img1)
+	imgInfo2 := NewImageInfo(img2)
+
+	processedImg := imgInfo1.SubtractImages(imgInfo2)
 
 	err = app.saveOperationImage(processedImg)
 	if err != nil {

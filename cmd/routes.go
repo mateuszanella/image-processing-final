@@ -32,6 +32,9 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/divide", app.HandleDivideValue())
 
 	mux.Handle("POST /api/not", app.HandleNotOpertion())
+	mux.Handle("POST /api/combination/and", app.HandleAndOperation())
+	mux.Handle("POST /api/combination/or", app.HandleOrOperation())
+	mux.Handle("POST /api/combination/xor", app.HandleXorOperation())
 
 	mux.Handle("POST /api/negative", app.HandleCreateNegativeFilter())
 	mux.Handle("POST /api/histogram-equalization", app.HandleCreateHisogramEqualization())
@@ -60,6 +63,7 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/rotate-270", app.HandleRotate270())
 
 	mux.Handle(("POST /api/combination/add"), app.HandleAddImages())
+	mux.Handle(("POST /api/combination/subtract"), app.HandleSubtractImages())
 
 	// templ routes
 	mux.Handle("/", templ.Handler(layout.Base(view.Index())))

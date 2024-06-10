@@ -565,6 +565,51 @@ func (imgInfo *ImageInfo) NewNot(img2 *ImageInfo) *image.RGBA {
 	return img
 }
 
+func (imgInfo *ImageInfo) NewAnd(img2 *ImageInfo) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := imgInfo.Pixels[y][x].R & img2.Pixels[y][x].R
+			g := imgInfo.Pixels[y][x].G & img2.Pixels[y][x].G
+			b := imgInfo.Pixels[y][x].B & img2.Pixels[y][x].B
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) NewOr(img2 *ImageInfo) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := imgInfo.Pixels[y][x].R | img2.Pixels[y][x].R
+			g := imgInfo.Pixels[y][x].G | img2.Pixels[y][x].G
+			b := imgInfo.Pixels[y][x].B | img2.Pixels[y][x].B
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) NewXor(img2 *ImageInfo) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := imgInfo.Pixels[y][x].R ^ img2.Pixels[y][x].R
+			g := imgInfo.Pixels[y][x].G ^ img2.Pixels[y][x].G
+			b := imgInfo.Pixels[y][x].B ^ img2.Pixels[y][x].B
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
 // Edge Detection
 func (imgInfo *ImageInfo) NewPrewittFilter() *image.Gray {
 	img := image.NewGray(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
@@ -689,6 +734,22 @@ func (imgInfo *ImageInfo) AddImages(img2 *ImageInfo) *image.RGBA {
 			r := min(imgInfo.Pixels[y][x].R+img2.Pixels[y][x].R, 255)
 			g := min(imgInfo.Pixels[y][x].G+img2.Pixels[y][x].G, 255)
 			b := min(imgInfo.Pixels[y][x].B+img2.Pixels[y][x].B, 255)
+
+			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
+		}
+	}
+
+	return img
+}
+
+func (imgInfo *ImageInfo) SubtractImages(img2 *ImageInfo) *image.RGBA {
+	img := image.NewRGBA(image.Rect(0, 0, imgInfo.Width, imgInfo.Height))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			r := subtractWithLimit(imgInfo.Pixels[y][x].R, uint8(img2.Pixels[y][x].R>>8))
+			g := subtractWithLimit(imgInfo.Pixels[y][x].G, uint8(img2.Pixels[y][x].G>>8))
+			b := subtractWithLimit(imgInfo.Pixels[y][x].B, uint8(img2.Pixels[y][x].B>>8))
 
 			img.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), 255})
 		}

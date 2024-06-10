@@ -113,3 +113,59 @@ async function addImagesAndRefresh() {
     });
     refreshCombinationOutputImage();
 }
+
+async function subtractImagesAndRefresh() {
+    await fetch('/api/combination/subtract', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            image1: 'image1.' + fileType1,
+            image2: 'image2.' + fileType2,
+        })
+    });
+    refreshCombinationOutputImage();
+}
+
+async function applyAndAndRefresh() {
+    await fetch('/api/combination/and', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            image1: 'image1.' + fileType1,
+            image2: 'image2.' + fileType2,
+        })
+    });
+    refreshCombinationOutputImage();
+}
+
+async function applyOrAndRefresh() {
+    await fetch('/api/combination/or', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            image1: 'image1.' + fileType1,
+            image2: 'image2.' + fileType2,
+        })
+    });
+    refreshCombinationOutputImage();
+}
+
+async function applyXorAndRefresh() {
+    await fetch('/api/combination/xor', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            image1: 'image1.' + fileType1,
+            image2: 'image2.' + fileType2,
+        })
+    });
+    refreshCombinationOutputImage();
+}

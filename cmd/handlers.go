@@ -615,6 +615,63 @@ func (app *Config) HandleNotOpertion() http.Handler {
 	})
 }
 
+func (app *Config) HandleAndOperation() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var data ImageOperationsBody
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		err = app.AndOperation(data.Image1, data.Image2)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply and operation: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleOrOperation() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var data ImageOperationsBody
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		err = app.OrOperation(data.Image1, data.Image2)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply or operation: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleXorOperation() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var data ImageOperationsBody
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		err = app.XorOperation(data.Image1, data.Image2)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to apply xor operation: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Image created successfully, check storage folder for output image")
+	})
+}
+
 // Basic Filters
 func (app *Config) HandleCreateNegativeFilter() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -1188,6 +1245,25 @@ func (app *Config) HandleAddImages() http.Handler {
 		}
 
 		fmt.Fprintln(w, "Images added successfully, check storage folder for output image")
+	})
+}
+
+func (app *Config) HandleSubtractImages() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var body ImageOperationsBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		err = app.CreateImageSubtraction(body.Image1, body.Image2)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to subtract images: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Images subtracted successfully, check storage folder for output image")
 	})
 }
 
