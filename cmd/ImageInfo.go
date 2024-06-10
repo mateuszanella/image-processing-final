@@ -432,7 +432,7 @@ func (imgInfo *ImageInfo) NewConservativeSmoothingFilter() *image.RGBA {
 				}
 			}
 
-			originalPixel := imgInfo.Pixels[y][x]
+			originalPixel := &imgInfo.Pixels[y][x]
 
 			if originalPixel.R < minR {
 				originalPixel.R = minR
