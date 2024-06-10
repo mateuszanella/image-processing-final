@@ -1267,6 +1267,25 @@ func (app *Config) HandleSubtractImages() http.Handler {
 	})
 }
 
+func (app *Config) HandleConcatImages() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var body ImageOperationsBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		err = app.CreateImageConcatenation(body.Image1, body.Image2)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to concat images: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Images concatenated successfully, check storage folder for output image")
+	})
+}
+
 // Helpers
 func getKernelTypeFromString(s string) (KernelType, error) {
 	kernelType, ok := kernelTypeMap[s]

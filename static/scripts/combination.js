@@ -169,3 +169,17 @@ async function applyXorAndRefresh() {
     });
     refreshCombinationOutputImage();
 }
+
+async function concatImagesAndRefresh() {
+    await fetch('/api/combination/concat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            image1: 'image1.' + fileType1,
+            image2: 'image2.' + fileType2,
+        })
+    });
+    refreshCombinationOutputImage();
+}

@@ -758,6 +758,39 @@ func (imgInfo *ImageInfo) SubtractImages(img2 *ImageInfo) *image.RGBA {
 	return img
 }
 
+func (imgInfo *ImageInfo) ConcatImages(img2 *ImageInfo) *image.RGBA {
+	newWidth := imgInfo.Width + img2.Width
+	newHeight := max(imgInfo.Height, img2.Height)
+
+	img := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
+
+	for y := 0; y < imgInfo.Height; y++ {
+		for x := 0; x < imgInfo.Width; x++ {
+			originalPixel := imgInfo.Pixels[y][x]
+			img.Set(x, y, color.RGBA{
+				R: uint8(originalPixel.R >> 8),
+				G: uint8(originalPixel.G >> 8),
+				B: uint8(originalPixel.B >> 8),
+				A: 255,
+			})
+		}
+	}
+
+	for y := 0; y < img2.Height; y++ {
+		for x := 0; x < img2.Width; x++ {
+			originalPixel := img2.Pixels[y][x]
+			img.Set(x+imgInfo.Width, y, color.RGBA{
+				R: uint8(originalPixel.R >> 8),
+				G: uint8(originalPixel.G >> 8),
+				B: uint8(originalPixel.B >> 8),
+				A: 255,
+			})
+		}
+	}
+
+	return img
+}
+
 // *-**-* Bonus *-**-*
 
 // Image Adjustments

@@ -774,6 +774,30 @@ func (app *Config) CreateImageSubtraction(image1, image2 string) error {
 	return nil
 }
 
+func (app *Config) CreateImageConcatenation(image1, image2 string) error {
+	img1, _, err := app.openImage(image1)
+	if err != nil {
+		return err
+	}
+
+	img2, _, err := app.openImage(image2)
+	if err != nil {
+		return err
+	}
+
+	imgInfo1 := NewImageInfo(img1)
+	imgInfo2 := NewImageInfo(img2)
+
+	processedImg := imgInfo1.ConcatImages(imgInfo2)
+
+	err = app.saveOperationImage(processedImg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // *-**-* Bonus *-**-*
 
 // Image Adjustments

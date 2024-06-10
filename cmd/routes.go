@@ -64,6 +64,7 @@ func (app *Config) routes() http.Handler {
 
 	mux.Handle(("POST /api/combination/add"), app.HandleAddImages())
 	mux.Handle(("POST /api/combination/subtract"), app.HandleSubtractImages())
+	mux.Handle(("POST /api/combination/concat"), app.HandleConcatImages())
 
 	// templ routes
 	mux.Handle("/", templ.Handler(layout.Base(view.Index())))
