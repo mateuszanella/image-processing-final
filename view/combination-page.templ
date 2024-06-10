@@ -10,18 +10,28 @@ templ CombinationPage() {
 				<div class="grid md:grid-cols-[200px_1fr] lg:grid-cols-[250px_1fr] items-start gap-6">
 					<div class="flex flex-col gap-2">
 						<div class="grid gap-2">
-							@partials.ToolbarButton("Add images", "static/svgs/filters.svg", "/component/combination/add")
+							@partials.ToolbarButton("Upload Image", "static/svgs/upload.svg", "/component/combination-dropzone")
+							@partials.ToolbarButton("Filters", "static/svgs/filters.svg", "/component/combination-filters")		
 						</div>
-						<div id="imageProcessingControls" class="mt-4">
+						<div class="mt-4">
+							@partials.CombinationDropzone()
 						</div>
 					</div>
-					<div class="flex flex-col gap-4 sticky top-0">
-						<div class="rounded-lg border aspect-video overflow-hidden flex items-center justify-center">
-							<img id="image-display" src="/placeholder.svg" alt="Image" class="object-cover max-w-[1980px] max-h-[1080px]"/>
+					<div class="rounded-lg border overflow-hidden">
+						<div class="flex flex-row justify-center gap-4">
+							<img id="first-image-display"  src="/placeholder.svg" alt="First Image"  class="object-cover max-w-[1980px] max-h-[1080px]"/>
+							<img id="second-image-display" src="/placeholder.svg" alt="Second Image" class="object-cover max-w-[1980px] max-h-[1080px]"/>
+						</div>
+						<div class="text-center py-10 px-4 mb-2 text-l text-gray-500 dark:text-gray-400">
+							Result:
+						</div>
+						<div class="flex justify-center">
+							<img id="output-image-display" src="/placeholder.svg" alt="Output Image" class="object-cover max-w-[1980px] max-h-[1080px]"/>
 						</div>
 					</div>
 				</div>
 			</div>
 		</main>
+		@partials.Footer()
 	</div>
 }

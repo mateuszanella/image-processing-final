@@ -16,7 +16,9 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("/static/", app.HandleStaticFiles())
 
 	mux.Handle("POST /api/image", app.HandleUploadImage())
+	mux.Handle("POST /api/image-combination", app.HandleCombinationUploadImage())
 	mux.Handle("GET /api/image", app.HandleGetImage())
+	mux.Handle("GET /api/image-combination", app.HandleGetCombinationImage())
 	mux.Handle("GET /api/image/{id}", app.HandleGetImageByID())
 	mux.Handle("GET /api/test", app.HandleTestImageManipulation())
 
@@ -56,7 +58,7 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/rotate-90", app.HandleRotate90())
 	mux.Handle("POST /api/rotate-270", app.HandleRotate270())
 
-	mux.Handle(("POST /api/combination/add"), app.HandleAddImages())
+	// mux.Handle(("POST /api/combination/add"), app.HandleAddImages())
 
 	// templ routes
 	mux.Handle("/", templ.Handler(layout.Base(view.Index())))
@@ -64,9 +66,10 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("/blank", templ.Handler(partials.Blank()))
 	mux.Handle("GET /image", app.HandleDisplayComponent())
 	mux.Handle("GET /component/dropzone", app.HandleDropzoneComponent())
+	mux.Handle("GET /component/combination-dropzone", app.HandleCombinationDropzoneComponent())
 	mux.Handle("GET /component/filters", app.HandleFiltersComponent())
+	mux.Handle("GET /component/combination-filters", app.HandleCombinationFiltersComponent())
 	mux.Handle("GET /component/adjustments", app.HandleAdjustmentsComponent())
-	mux.Handle("GET /component/combination/add", app.HandleAddImagesComponent())
 
 	return mux
 }

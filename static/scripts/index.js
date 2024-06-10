@@ -26,13 +26,27 @@ async function refreshImage() {
     });
 }
 
-async function uploadImage(file) {
+async function uploadImage(upload, filename = 'single') {
     let formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', upload);
+
+    let apiEndpoint;
+    switch(filename) {
+        case 'single':
+            apiEndpoint = '/api/image';
+            break;
+            case 'image1':
+            case 'image2':
+                apiEndpoint = '/api/image-combination';
+                formData.append('filename', filename);
+                break;
+        default:
+            throw new Error('Invalid operation type');
+    }
 
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await fetch('/api/image', {
+            const response = await fetch(apiEndpoint, {
                 method: 'POST',
                 body: formData
             });

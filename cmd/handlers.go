@@ -149,6 +149,111 @@ func (app *Config) HandleUploadImage() http.Handler {
 	})
 }
 
+// On this upload, 5 files must be created:
+// - The first uploaded image (and it's display (display-image1.jpg)) (image1.jpg)
+// - The second uploaded image (and it's display (display-image2.jpg)) (image2.jpg)
+// - The output image, for now, will be the last uploaded image (combination-output.jpg) just to make sure
+func (app *Config) HandleCombinationUploadImage() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		file, _, err := r.FormFile("image")
+		if err != nil {
+			http.Error(w, "Failed to read image", http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
+
+		// Wich of the images will be the upload
+		filename := r.FormValue("filename")
+		if filename == "" {
+			http.Error(w, "Operation parameter is required", http.StatusBadRequest)
+			return
+		}
+
+		if filename != "image1" && filename != "image2" {
+			http.Error(w, "Invalid operation parameter", http.StatusBadRequest)
+			return
+		}
+
+		_, format, err := image.Decode(file)
+		if err != nil {
+			http.Error(w, "Failed to decode image", http.StatusInternalServerError)
+			return
+		}
+
+		_, err = file.Seek(0, 0)
+		if err != nil {
+			http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
+			return
+		}
+
+		// Create the base image
+		out, err := os.Create("./storage/" + filename + "." + format)
+		if err != nil {
+			http.Error(w, "Failed to open file", http.StatusInternalServerError)
+			return
+		}
+		defer out.Close()
+
+		_, err = io.Copy(out, file)
+		if err != nil {
+			http.Error(w, "Failed to save image", http.StatusInternalServerError)
+			return
+		}
+
+		// Create the display image
+		if format == "tiff" || format == "tif" {
+			_, err = file.Seek(0, 0)
+			if err != nil {
+				http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
+				return
+			}
+
+			img, _, err := image.Decode(file)
+			if err != nil {
+				http.Error(w, "Failed to decode image", http.StatusInternalServerError)
+				return
+			}
+
+			out2, err := os.Create("./storage/display-" + filename + ".jpeg")
+			if err != nil {
+				http.Error(w, "Failed to open file", http.StatusInternalServerError)
+				return
+			}
+			defer out2.Close()
+
+			var opt jpeg.Options
+			opt.Quality = 100
+
+			err = jpeg.Encode(out2, img, &opt)
+			if err != nil {
+				http.Error(w, "Failed to encode image", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			out2, err := os.Create("./storage/display-" + filename + "." + format)
+			if err != nil {
+				http.Error(w, "Failed to open file", http.StatusInternalServerError)
+				return
+			}
+			defer out2.Close()
+
+			_, err = file.Seek(0, 0)
+			if err != nil {
+				http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
+				return
+			}
+
+			_, err = io.Copy(out2, file)
+			if err != nil {
+				http.Error(w, "Failed to save image", http.StatusInternalServerError)
+				return
+			}
+		}
+
+		templ.Handler(partials.ImageDisplay()).ServeHTTP(w, r)
+	})
+}
+
 func (app *Config) HandleGetImage() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filetype := r.URL.Query().Get("filetype")
@@ -167,6 +272,42 @@ func (app *Config) HandleGetImage() http.Handler {
 				http.Error(w, "Image not found", http.StatusNotFound)
 				return
 			}
+		}
+
+		if err != nil {
+			http.Error(w, "Failed to open image", http.StatusInternalServerError)
+			return
+		}
+
+		http.ServeFile(w, r, filePath)
+	})
+}
+
+func (app *Config) HandleGetCombinationImage() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filetype := r.URL.Query().Get("filetype")
+		if filetype == "" {
+			http.Error(w, "Filename not provided", http.StatusBadRequest)
+			return
+		}
+
+		filename := r.URL.Query().Get("filename")
+		if filename == "" {
+			http.Error(w, "Filename not provided", http.StatusBadRequest)
+			return
+		}
+
+		if filename != "image1" && filename != "image2" {
+			http.Error(w, "Invalid filename", http.StatusBadRequest)
+			return
+		}
+
+		filePath := "./storage/" + filename + "." + filetype
+
+		_, err := os.Stat(filePath)
+		if os.IsNotExist(err) {
+			http.Error(w, "Image not found", http.StatusNotFound)
+			return
 		}
 
 		if err != nil {
@@ -1027,6 +1168,18 @@ func (app *Config) HandleDisplayComponent() http.Handler {
 func (app *Config) HandleDropzoneComponent() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		templ.Handler(partials.Dropzone()).ServeHTTP(w, r)
+	})
+}
+
+func (app *Config) HandleCombinationDropzoneComponent() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(partials.CombinationDropzone()).ServeHTTP(w, r)
+	})
+}
+
+func (app *Config) HandleCombinationFiltersComponent() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(partials.CombinationFilters()).ServeHTTP(w, r)
 	})
 }
 

@@ -1,28 +1,27 @@
 package partials
 
-templ Dropzone() {
-	<form id="dropzone" method="post" enctype="multipart/form-data" class="flex flex-col items-center justify-center w-full">
-		<label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 hover:bg-gray-100">
+templ FirstDropzone() {
+	<form id="first-dropzone" method="post" enctype="multipart/form-data" class="flex flex-col items-center justify-center w-full mb-4">
+		<label for="dropzone-1-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 hover:bg-gray-100">
 			<div class="flex flex-col items-center justify-center pt-5 pb-6">
 				<svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
 					<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"></path>
 				</svg>
-				<p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-				<p class="mb-2 text-xs text-gray-500 dark:text-gray-400">PNG, JPG, TIFF or BMP</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">.tiff images won't load on preview</p>
+				<p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> first image</p>
+				<p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, TIFF or BMP</p>
 			</div>
 		</label>
-        <input id="dropzone-file" type="file" class="hidden" name="image" accept="image/png,image/jpeg,image/tiff,image/bmp"/>
+        <input id="dropzone-1-file" type="file" class="hidden" name="image" accept="image/png,image/jpeg,image/tiff,image/bmp"/>
 		<button
-            id="dropzone-submit"
+            id="dropzone-1-submit"
             class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 hover:bg-gray-200 mt-4"
 		>
 			Upload
 		</button>
 	</form>
 	<script>
-        document.getElementById('dropzone-file').addEventListener('change', async function() {
-            let label = document.querySelector('label[for="dropzone-file"]');
+        document.getElementById('dropzone-1-file').addEventListener('change', async function() {
+            let label = document.querySelector('label[for="dropzone-1-file"]');
 
             file     = this.files[0];
             fileType = file.type.split('/')[1];
@@ -55,12 +54,12 @@ templ Dropzone() {
             }
         });
 
-        document.getElementById('dropzone-submit').addEventListener('click', async function(event) {
+        document.getElementById('dropzone-1-submit').addEventListener('click', async function(event) {
             event.preventDefault();
             if (file) {
-                await uploadImage(file);
-                refreshImage();
-                resetDropzone();
+                await uploadImage(file, 'image1');
+                refreshFirstImage();
+                resetFirstDropzone();
             }
         });
     </script>

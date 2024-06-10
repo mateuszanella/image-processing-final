@@ -11,13 +11,14 @@ templ Base(children ...templ.Component) {
             <link href="/static/css/tailwind.css" rel="stylesheet"/>
             <!-- scritps -->
             <script src="/static/scripts/index.js" defer></script>
+            <script src="/static/scripts/combination.js" defer></script>
         </head>
         <body>
             for _, child := range children {
                 @child
             }
             <!-- htmx -->
-            <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+            <script src="https://unpkg.com/htmx.org@1.9.12"></script>
         </body>
     </html>
 }
