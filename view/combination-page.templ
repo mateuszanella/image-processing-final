@@ -1,0 +1,27 @@
+package view
+
+import "image-processing/view/partials"
+
+templ CombinationPage() {
+	<div class="flex flex-col min-h-screen">
+		@partials.Navbar()
+		<main class="flex-1">
+			<div class="container py-10 px-4 sm:px-6">
+				<div class="grid md:grid-cols-[200px_1fr] lg:grid-cols-[250px_1fr] items-start gap-6">
+					<div class="flex flex-col gap-2">
+						<div class="grid gap-2">
+							@partials.ToolbarButton("Add images", "static/svgs/filters.svg", "/component/combination/add")
+						</div>
+						<div id="imageProcessingControls" class="mt-4">
+						</div>
+					</div>
+					<div class="flex flex-col gap-4 sticky top-0">
+						<div class="rounded-lg border aspect-video overflow-hidden flex items-center justify-center">
+							<img id="image-display" src="/placeholder.svg" alt="Image" class="object-cover max-w-[1980px] max-h-[1080px]"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
+}
