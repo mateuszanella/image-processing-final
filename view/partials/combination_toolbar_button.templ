@@ -1,0 +1,10 @@
+package partials
+
+templ CombinationToolbarButton(text string, icon string, hxGet string) {
+    <button class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 hover:bg-gray-200" hx-get={hxGet} hx-target="#combinationImageProcessingControls">
+        if icon != "" {
+            <img src={ icon } alt="back" class="w-4 h-4 mr-2 fill-current"/>
+        }
+        { text }
+    </button>
+}

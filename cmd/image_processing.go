@@ -62,6 +62,27 @@ func (app *Config) saveImage(img image.Image, format string) error {
 	return nil
 }
 
+// fuck this
+func (app *Config) saveOperationImage(img image.Image) error {
+	out, err := os.Create("./storage/combination-output.jpeg")
+	if err != nil {
+		fmt.Println("An error occurred while saving the image: ", err)
+		return err
+	}
+	defer out.Close()
+
+	var opt jpeg.Options
+	opt.Quality = 100
+	err = jpeg.Encode(out, img, &opt)
+
+	if err != nil {
+		fmt.Println("An error occurred while encoding the image: ", err)
+		return err
+	}
+
+	return nil
+}
+
 // Basic filters
 func (app *Config) CreateGrayscale(filename string) error {
 	if filename == "" {
@@ -609,6 +630,32 @@ func (app *Config) CreateLaplacianEdgeDetection(filename string) error {
 	processedImg := imgInfo.NewLaplacianFilter()
 
 	err = app.saveImage(processedImg, format)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Image Based Operations
+
+func (app *Config) CreateImageAddition(image1, image2 string) error {
+	img1, _, err := app.openImage(image1)
+	if err != nil {
+		return err
+	}
+
+	img2, _, err := app.openImage(image2)
+	if err != nil {
+		return err
+	}
+
+	imgInfo1 := NewImageInfo(img1)
+	imgInfo2 := NewImageInfo(img2)
+
+	processedImg := imgInfo1.AddImages(imgInfo2)
+
+	err = app.saveOperationImage(processedImg)
 	if err != nil {
 		return err
 	}

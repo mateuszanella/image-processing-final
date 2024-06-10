@@ -23,8 +23,8 @@ templ FirstDropzone() {
         document.getElementById('dropzone-1-file').addEventListener('change', async function() {
             let label = document.querySelector('label[for="dropzone-1-file"]');
 
-            file     = this.files[0];
-            fileType = file.type.split('/')[1];
+            file      = this.files[0];
+            fileType1 = file.type.split('/')[1];
 
             if (file) {
                 label.classList.remove('border-dashed');

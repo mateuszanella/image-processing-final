@@ -56,6 +56,11 @@ type MorphologicalOpeationsBody struct {
 	Size       string `json:"size"`
 }
 
+type ImageOperationsBody struct {
+	Image1 string `json:"image1"`
+	Image2 string `json:"image2"`
+}
+
 // Image updates
 func (app *Config) HandleStaticFiles() http.Handler {
 	fs := http.FileServer(http.Dir("./static"))
@@ -287,7 +292,7 @@ func (app *Config) HandleGetCombinationImage() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		filetype := r.URL.Query().Get("filetype")
 		if filetype == "" {
-			http.Error(w, "Filename not provided", http.StatusBadRequest)
+			http.Error(w, "Filetype not provided", http.StatusBadRequest)
 			return
 		}
 
@@ -302,7 +307,26 @@ func (app *Config) HandleGetCombinationImage() http.Handler {
 			return
 		}
 
-		filePath := "./storage/" + filename + "." + filetype
+		filePath := "./storage/display-" + filename + "." + filetype
+
+		_, err := os.Stat(filePath)
+		if os.IsNotExist(err) {
+			http.Error(w, "Image not found", http.StatusNotFound)
+			return
+		}
+
+		if err != nil {
+			http.Error(w, "Failed to open image", http.StatusInternalServerError)
+			return
+		}
+
+		http.ServeFile(w, r, filePath)
+	})
+}
+
+func (app *Config) HandleGetCombinationOutput() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		filePath := "./storage/combination-output.jpeg"
 
 		_, err := os.Stat(filePath)
 		if os.IsNotExist(err) {
@@ -1146,6 +1170,27 @@ func (app *Config) HandleRotate270() http.Handler {
 	})
 }
 
+// Image Based Operations
+
+func (app *Config) HandleAddImages() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var body ImageOperationsBody
+		err := json.NewDecoder(r.Body).Decode(&body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		err = app.CreateImageAddition(body.Image1, body.Image2)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to add images: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintln(w, "Images added successfully, check storage folder for output image")
+	})
+}
+
 // Helpers
 func getKernelTypeFromString(s string) (KernelType, error) {
 	kernelType, ok := kernelTypeMap[s]
@@ -1192,11 +1237,5 @@ func (app *Config) HandleFiltersComponent() http.Handler {
 func (app *Config) HandleAdjustmentsComponent() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		templ.Handler(partials.Adjustments()).ServeHTTP(w, r)
-	})
-}
-
-func (app *Config) HandleAddImagesComponent() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		templ.Handler(partials.AddImagesForm()).ServeHTTP(w, r)
 	})
 }

@@ -1,11 +1,6 @@
 package partials
 
-import "image-processing/view/partials/basic_operations"
-import "image-processing/view/partials/filters"
-import "image-processing/view/partials/logic_operations"
-import "image-processing/view/partials/spatial_domain_filters"
-import "image-processing/view/partials/morphological_operations"
-import "image-processing/view/partials/edge_detection"
+import image_combination "image-processing/view/partials/image_combination"
 
 templ CombinationFilters() {
     <div class="flex flex-col gap-2">
@@ -13,47 +8,8 @@ templ CombinationFilters() {
 
             @Divider()
 
-            @filters.GrayscaleFilterButton()
-            @filters.HistogramEqualizationFilterButton()
-            @filters.NegativeFilterButton()
+            @image_combination.AddImagesButton()
 
-            @Divider()
-
-            @basic_operations.AddValueFilterButton()
-            @basic_operations.SubValueFilterButton()
-            @basic_operations.MulValueFilterButton()
-            @basic_operations.DivValueFilterButton()
-
-            @Divider()
-
-            @filters.BinaryFilterButton()
-            @logic_operations.NotOperationButton()
-
-            @Divider()
-
-            @spatial_domain_filters.MeanFilterButton()
-            @spatial_domain_filters.MedianFilterButton()
-            @spatial_domain_filters.GaussianFilterButton()
-            <p class="text-xs italic text-gray-500 dark:text-gray-400" >*Large images might take a while to process</p>
-            @spatial_domain_filters.MinimumFilterButton()
-            @spatial_domain_filters.MaximumFilterButton()
-            @spatial_domain_filters.OrderFilterButton()
-            <p class="text-xs italic text-gray-500 dark:text-gray-400" >*Type values between 0 or 8</p>
-            @spatial_domain_filters.ConservativeSmoothingFilterButton()
-
-            @Divider()
-
-            @morphological_operations.DilationFilterButton()
-            @morphological_operations.ErosionFilterButton()
-            @morphological_operations.OpeningFilterButton()
-            @morphological_operations.ClosingFilterButton()
-            @morphological_operations.ContourFilterButton()
-
-            @Divider()
-
-            @edge_detection.PrewittEdgeDetectionButton()
-            @edge_detection.SobelEdgeDetectionButton()
-            @edge_detection.LaplacianEdgeDetectionButton()
         </div>
     </div>
 }

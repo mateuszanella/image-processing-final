@@ -19,6 +19,7 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/image-combination", app.HandleCombinationUploadImage())
 	mux.Handle("GET /api/image", app.HandleGetImage())
 	mux.Handle("GET /api/image-combination", app.HandleGetCombinationImage())
+	mux.Handle("GET /api/image-combination-output", app.HandleGetCombinationOutput())
 	mux.Handle("GET /api/image/{id}", app.HandleGetImageByID())
 	mux.Handle("GET /api/test", app.HandleTestImageManipulation())
 
@@ -58,7 +59,7 @@ func (app *Config) routes() http.Handler {
 	mux.Handle("POST /api/rotate-90", app.HandleRotate90())
 	mux.Handle("POST /api/rotate-270", app.HandleRotate270())
 
-	// mux.Handle(("POST /api/combination/add"), app.HandleAddImages())
+	mux.Handle(("POST /api/combination/add"), app.HandleAddImages())
 
 	// templ routes
 	mux.Handle("/", templ.Handler(layout.Base(view.Index())))

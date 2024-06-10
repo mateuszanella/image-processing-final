@@ -10,10 +10,10 @@ templ CombinationPage() {
 				<div class="grid md:grid-cols-[200px_1fr] lg:grid-cols-[250px_1fr] items-start gap-6">
 					<div class="flex flex-col gap-2">
 						<div class="grid gap-2">
-							@partials.ToolbarButton("Upload Image", "static/svgs/upload.svg", "/component/combination-dropzone")
-							@partials.ToolbarButton("Filters", "static/svgs/filters.svg", "/component/combination-filters")		
+							@partials.CombinationToolbarButton("Upload Image", "static/svgs/upload.svg", "/component/combination-dropzone")
+							@partials.CombinationToolbarButton("Filters", "static/svgs/filters.svg", "/component/combination-filters")		
 						</div>
-						<div class="mt-4">
+						<div id="combinationImageProcessingControls" class="mt-4">
 							@partials.CombinationDropzone()
 						</div>
 					</div>

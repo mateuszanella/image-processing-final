@@ -5,6 +5,8 @@
     Maybe the true clean code are the friends we made along the way.
 */
 // *-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-**-*/*-*_*-*
+let fileType1 = 'jpeg'
+let fileType2 = 'jpeg'
 
 async function resetFirstDropzone() {
     const label = document.querySelector('label[for="dropzone-1-file"]');
@@ -46,8 +48,8 @@ async function refreshFirstImage() {
     return new Promise((resolve, reject) => {
         var img = document.getElementById('first-image-display');
 
-        if (fileType === 'tiff' || fileType === 'tif') type = 'jpeg'
-        else type = fileType;
+        if (fileType1 === 'tiff' || fileType1 === 'tif') type = 'jpeg'
+        else type = fileType1;
 
         fetch('./api/image-combination?filetype=' + type +
             '&filename=image1' +
@@ -66,8 +68,8 @@ async function refreshSecondImage() {
     return new Promise((resolve, reject) => {
         var img = document.getElementById('second-image-display');
 
-        if (fileType === 'tiff' || fileType === 'tif') type = 'jpeg'
-        else type = fileType;
+        if (fileType2 === 'tiff' || fileType2 === 'tif') type = 'jpeg'
+        else type = fileType2;
 
         fetch('./api/image-combination?filetype=' + type +
             '&filename=image2' +
@@ -80,4 +82,34 @@ async function refreshSecondImage() {
             })
             .catch(reject);
     });
+}
+
+async function refreshCombinationOutputImage() {
+    return new Promise((resolve, reject) => {
+        var img = document.getElementById('output-image-display');
+
+        fetch('./api/image-combination-output?filetype=jpeg' +
+            '&_=' + new Date().getTime()) // Prevent caching
+            .then(response => response.blob())
+            .then(blob => {
+                img.src = URL.createObjectURL(blob);
+                img.onload = resolve;
+                img.onerror = reject;
+            })
+            .catch(reject);
+    });
+}
+
+async function addImagesAndRefresh() {
+    await fetch('/api/combination/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            image1: 'image1.' + fileType1,
+            image2: 'image2.' + fileType2,
+        })
+    });
+    refreshCombinationOutputImage();
 }
